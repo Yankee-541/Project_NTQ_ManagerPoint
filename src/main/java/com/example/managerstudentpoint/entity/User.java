@@ -1,7 +1,13 @@
 package com.example.managerstudentpoint.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -15,46 +21,53 @@ import java.util.List;
 
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "user")
-public class User extends BaseEntity{
-    @Column(name = "username")
-    private String userName;
+public class User extends BaseEntity {
+    @Column
+    private String username;
 
-    @Column(name = "password")
-    private String passWord;
+    @Column
+    private String password;
 
-    @Column(name = "full_name")
+    @Column(name = "fullname")
     private String fullName;
 
-    @Column(name = "gender")
+    @Column(name = "rollnumber")
+    private String rollNumber;
+
+    @Column
     private String gender;
 
-    @Column(name = "address")
+    @Column
     private String address;
 
-    @Column(name = "status")
+    @Column
     private String status;
 
-    @Column(name = "email")
+    @Column
     private String email;
 
-    @Column(name = "phone_number")
-    private Long phoneNumber;
-
+    @Column(name = "phonenumber")
+    private String phoneNumber;
 
     @OneToMany(
-            mappedBy = "users"
+            mappedBy = "users", cascade = CascadeType.ALL
     )
+    @JsonIgnore
     private List<Reports> reports = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "class_id")
+    @JoinColumn(name = "class_id", nullable = false)
     private GroupClass groupClass;
 
-    @ManyToMany
-    @JoinTable(name = "user_role",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
-    private List<Role> roleList = new ArrayList<>();
+
+
+//    @ManyToMany
+//    @JoinTable(name = "user_role",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "role_id"))
+//    private List<Role> roleList = new ArrayList<>();
 
 }

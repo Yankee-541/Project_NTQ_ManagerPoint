@@ -2,8 +2,10 @@ package com.example.managerstudentpoint.entity;
 
 import lombok.Data;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
@@ -18,7 +20,7 @@ public class Subject extends BaseEntity{
     private String nameSubject;
 
     @OneToMany(
-            mappedBy = "subject"
+                mappedBy = "subject", cascade =  CascadeType.ALL, fetch = FetchType.EAGER
     )
     private List<Reports> reports = new ArrayList<>();
 

@@ -6,5 +6,7 @@ import javax.persistence.MappedSuperclass;
 
 @Data
 @MappedSuperclass
-public abstract class BaseAbstract_DTO {
+public abstract class BaseAbstractDTO<T> {
+    private Long id;
+
 }

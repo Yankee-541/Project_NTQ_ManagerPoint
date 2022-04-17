@@ -1,6 +1,9 @@
 package com.example.managerstudentpoint.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -16,9 +19,8 @@ public class GroupClass extends BaseEntity {
     private String className;
 
     @OneToMany(
-            mappedBy = "groupClass"
+            mappedBy = "groupClass",cascade = CascadeType.ALL
     )
-    private List<User>  userList = new ArrayList<>();
-
-
+    @JsonIgnore
+    private List<User> userList;
 }

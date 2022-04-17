@@ -2,6 +2,7 @@ package com.example.managerstudentpoint.entity;
 
 import lombok.Data;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -19,7 +20,7 @@ public class Reports extends BaseEntity {
     @JoinColumn(name = "subject_id")
     private Subject subject;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(cascade = {CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH,CascadeType.DETACH})
+    @JoinColumn(name = "user_id", nullable=false)
     private User users;
 }
