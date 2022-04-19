@@ -9,29 +9,28 @@ import com.example.managerstudentpoint.response.Response;
 import com.example.managerstudentpoint.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService {
-    @Autowired
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private ReportRepository reportRepository;
+    private final ObjectMapper OBJECT_MAPPER;
+    private final UserRepository USER_REPOSITORY;
+    private final ReportRepository REPORT_REPOSITORY;
 
     @Override
     public ResponseEntity<Response> details(Long id) {
-        UserDTO userDTO = objectMapper.convertValue(userRepository.findById(id).orElse(null), UserDTO.class);
-        ReportsDTO reportsDTO = objectMapper.convertValue(reportRepository.findById(id).orElse(null), ReportsDTO.class);
+        UserDTO userDTO = OBJECT_MAPPER.convertValue(USER_REPOSITORY.findById(id).orElse(null), UserDTO.class);
+        ReportsDTO reportsDTO = OBJECT_MAPPER.convertValue(REPORT_REPOSITORY.findById(id).orElse(null), ReportsDTO.class);
         if(userDTO == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new Response("Not found", "Don't have news with id: " + id, "", "")
@@ -54,7 +53,7 @@ public class UserServiceImpl implements UserService {
             String phoneNumber,
             Integer size,
             Integer page) {
-        return userRepository.getUserByCondition(
+        return USER_REPOSITORY.getUserByCondition(
                 fullName,
                 rollNumber,
                 gender,
@@ -67,5 +66,16 @@ public class UserServiceImpl implements UserService {
                         size,
                         Sort.by("rollNumber").descending())
                 );
+    }
+
+    @Override
+    public UserDTO addAccStudent(UserDTO userDTO) {
+        USER_REPOSITORY.save(OBJECT_MAPPER.convertValue(userDTO,User.class));
+        return userDTO;
+    }
+
+    @Override
+    public List<User> listAll() {
+        return USER_REPOSITORY.findAll(Sort.by("email").ascending());
     }
 }

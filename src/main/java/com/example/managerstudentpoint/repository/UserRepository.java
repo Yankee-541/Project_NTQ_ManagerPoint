@@ -12,7 +12,8 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAllByIdLike(String name);
-
+    User findByUsername(String username);
+    boolean existsByUsername(String username);
 //    @Query(value =
 //            "select * from user u " +
 //                    "where (:rollNumber = '' or : rollNumber = u.rollnumber) " +

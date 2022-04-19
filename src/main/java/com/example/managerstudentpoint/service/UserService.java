@@ -1,9 +1,12 @@
 package com.example.managerstudentpoint.service;
 
+import com.example.managerstudentpoint.dto.UserDTO;
 import com.example.managerstudentpoint.entity.User;
 import com.example.managerstudentpoint.response.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 public interface UserService {
     ResponseEntity<Response> details(Long id);
@@ -18,4 +21,8 @@ public interface UserService {
             String phoneNumber,
             Integer size,
             Integer page);
+
+    UserDTO addAccStudent(UserDTO userDTO);
+
+    List<User> listAll();
 }

@@ -1,5 +1,6 @@
 package com.example.managerstudentpoint.dto;
 
+import com.example.managerstudentpoint.entity.GroupClass;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
@@ -14,4 +15,6 @@ public class UserDTO extends BaseAbstractDTO<UserDTO> {
     private String email;
     private String gender;
     private String address;
+    private String rollNumber;
+//    private GroupClass class_id;
 }

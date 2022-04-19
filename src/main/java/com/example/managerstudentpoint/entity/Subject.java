@@ -1,6 +1,7 @@
 package com.example.managerstudentpoint.entity;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,10 +20,11 @@ public class Subject extends BaseEntity{
     @Column(name = "name_subject")
     private String nameSubject;
 
-    @OneToMany(
-                mappedBy = "subject", cascade =  CascadeType.ALL, fetch = FetchType.EAGER
-    )
-    private List<Reports> reports = new ArrayList<>();
+//    @OneToMany(
+//                mappedBy = "subject", cascade =  CascadeType.ALL, fetch = FetchType.EAGER
+//    )
+//    @Autowired
+//    private List<Reports> reports = new ArrayList<>();
 
 
 }

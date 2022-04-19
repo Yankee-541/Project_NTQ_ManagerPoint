@@ -1,42 +1,62 @@
 package com.example.managerstudentpoint.controller;
 
-import com.example.managerstudentpoint.entity.User;
-import com.example.managerstudentpoint.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.GetMapping;
+import com.example.managerstudentpoint.JwtUtil.JwtUtil;
+import com.example.managerstudentpoint.dto.AuthenRequestDTO;
+import com.example.managerstudentpoint.service.Impl.AuthenServiceImpl;
+import lombok.AllArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("user")
+import java.security.NoSuchAlgorithmException;
+
+@RequestMapping("api/")
 @RestController
+@AllArgsConstructor
 public class UserController {
-    @Autowired
-    UserService userService;
+//    @Autowired
+//    UserService userService;
+//
+//    @GetMapping("/search")
+//    public Page<User> getUser(
+//            @RequestParam(defaultValue = "") String fullName,
+//            @RequestParam(defaultValue = "") String rollNumber,
+//            @RequestParam(defaultValue = "") String gender,
+//            @RequestParam(defaultValue = "") String address,
+//            @RequestParam(defaultValue = "") String status,
+//            @RequestParam(defaultValue = "") String email,
+//            @RequestParam(defaultValue = "") String phoneNumber,
+//            @RequestParam(defaultValue = "5") Integer size,
+//            @RequestParam(defaultValue = "1") Integer page){
+//        return userService.getUser(
+//                fullName,
+//                rollNumber,
+//                gender,
+//                address,
+//                status,
+//                email,
+//                phoneNumber,
+//                size,
+//                page);
+//    }
 
-    @GetMapping("/search")
-    public Page<User> getUser(
-            @RequestParam(defaultValue = "") String fullName,
-            @RequestParam(defaultValue = "") String rollNumber,
-            @RequestParam(defaultValue = "") String gender,
-            @RequestParam(defaultValue = "") String address,
-            @RequestParam(defaultValue = "") String status,
-            @RequestParam(defaultValue = "") String email,
-            @RequestParam(defaultValue = "") String phoneNumber,
-            @RequestParam(defaultValue = "3") Integer size,
-            @RequestParam(defaultValue = "1") Integer page){
-        return userService.getUser(
-                fullName,
-                rollNumber,
-                gender,
-                address,
-                status,
-                email,
-                phoneNumber,
-                size,
-                page);
+//    private JwtUtil jwtUtil;
+//    private AuthenticationManager authenticationManager;
+    private final AuthenServiceImpl AUTHEN_SERVICE;
+
+    @PostMapping("/authen")
+    public String generateToken(@RequestBody AuthenRequestDTO authenRequest) throws NoSuchAlgorithmException {
+//        try {
+//            authenticationManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(authenRequest.getUsername(),authenRequest.getPassword())
+//            );
+//        }catch (Exception e){
+//            throw new Exception("invalid");
+//        }
+//        return jwtUtil.generateToken(authenRequest.getUsername());
+        return AUTHEN_SERVICE.login(authenRequest);
+
     }
-
-
 }
