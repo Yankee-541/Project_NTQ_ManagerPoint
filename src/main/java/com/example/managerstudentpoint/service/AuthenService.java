@@ -8,7 +8,8 @@ import java.security.NoSuchAlgorithmException;
 
 public interface AuthenService {
     String login(AuthenRequestDTO authenRequestDTO) throws NoSuchAlgorithmException;
-
+    UserDetails loadUserById(Long userId);
     String addAccStudent(UserDTO userDTO) throws NoSuchAlgorithmException;
+//    String addAccStudent(UserDTO userDTO) throws NoSuchAlgorithmException;
 
 }

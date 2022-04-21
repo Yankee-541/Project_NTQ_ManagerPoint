@@ -1,7 +1,9 @@
 package com.example.managerstudentpoint.service.Impl;
 
+import com.example.managerstudentpoint.JwtUtil.JwtTokenProvider;
 import com.example.managerstudentpoint.dto.ReportsDTO;
 import com.example.managerstudentpoint.dto.UserDTO;
+import com.example.managerstudentpoint.entity.CustomUserDetails;
 import com.example.managerstudentpoint.entity.User;
 import com.example.managerstudentpoint.repository.ReportRepository;
 import com.example.managerstudentpoint.repository.UserRepository;
@@ -14,6 +16,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -22,10 +27,11 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @Transactional
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
     private final ObjectMapper OBJECT_MAPPER;
     private final UserRepository USER_REPOSITORY;
     private final ReportRepository REPORT_REPOSITORY;
+    private JwtTokenProvider JWT_UTIL;
 
     @Override
     public ResponseEntity<Response> details(Long id) {
@@ -77,5 +83,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> listAll() {
         return USER_REPOSITORY.findAll(Sort.by("email").ascending());
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = USER_REPOSITORY.findByUsername(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(username);
+        }
+        return new CustomUserDetails(user);
+
+    }
+    @Override
+    public UserDetails loadUserById(Long userId) {
+        User user =USER_REPOSITORY.findById(userId).orElse(null);
+        return new CustomUserDetails(user);
     }
 }

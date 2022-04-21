@@ -14,6 +14,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findAllByIdLike(String name);
     User findByUsername(String username);
     boolean existsByUsername(String username);
+    boolean existsByPhoneNumber(String phoneNum);
+    boolean existsByEmail(String email);
 //    @Query(value =
 //            "select * from user u " +
 //                    "where (:rollNumber = '' or : rollNumber = u.rollnumber) " +

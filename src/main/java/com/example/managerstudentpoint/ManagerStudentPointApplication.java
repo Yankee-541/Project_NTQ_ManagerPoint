@@ -8,8 +8,8 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import java.util.List;
 import java.util.stream.Stream;
 
-@SpringBootApplication(exclude ={SecurityAutoConfiguration.class})
-//@SpringBootApplication
+//@SpringBootApplication(exclude ={SecurityAutoConfiguration.class})
+@SpringBootApplication
 public class ManagerStudentPointApplication {
 
     public static void main(String[] args) {

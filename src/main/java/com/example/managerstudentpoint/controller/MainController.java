@@ -8,24 +8,32 @@ import com.example.managerstudentpoint.response.Response;
 import com.example.managerstudentpoint.service.AuthenService;
 import com.example.managerstudentpoint.service.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/student")
@@ -63,13 +71,22 @@ public class MainController {
         return USER_SERVICE.details(id);
     }
 
-    @PutMapping
-    public String addAccStudent(@RequestBody UserDTO userDTO) throws NoSuchAlgorithmException {
-        return AUTHEN_SERVICE.addAccStudent(userDTO);
+    @PutMapping("/register")
+//    String addAccStudent(@Valid @RequestBody UserDTO userDTO) throws NoSuchAlgorithmException {
+//        return AUTHEN_SERVICE.addAccStudent(userDTO);
+//    }
+    ResponseEntity<String> addAccStudent(@Valid @RequestBody UserDTO userDTO) throws NoSuchAlgorithmException {
+        AUTHEN_SERVICE.addAccStudent(userDTO);
+        return ResponseEntity.ok("User is valid");
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody AuthenRequestDTO authenRequest) throws NoSuchAlgorithmException {
+        return AUTHEN_SERVICE.login(authenRequest);
     }
 
     @GetMapping("/export")
-    public void exportToExcel(HttpServletResponse response) throws IOException{
+    public void exportToExcel(HttpServletResponse response) throws IOException {
         response.setContentType("application/octet-stream");
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
         String currentDateTime = dateFormat.format(new Date());
@@ -82,5 +99,15 @@ public class MainController {
         studentExportExcel.export(response);
     }
 
-
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+        return errors;
+    }
 }
