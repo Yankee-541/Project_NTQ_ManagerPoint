@@ -52,8 +52,8 @@ public class MainController {
             @RequestParam(defaultValue = "") String status,
             @RequestParam(defaultValue = "") String email,
             @RequestParam(defaultValue = "") String phoneNumber,
-            @RequestParam(defaultValue = "5") Integer size,
-            @RequestParam(defaultValue = "2") Integer page) {
+            @RequestParam(name = "size") Integer size,
+            @RequestParam(name = "page") Integer page) {
         return USER_SERVICE.getUser(
                 fullName,
                 rollNumber,
@@ -75,9 +75,9 @@ public class MainController {
 //    String addAccStudent(@Valid @RequestBody UserDTO userDTO) throws NoSuchAlgorithmException {
 //        return AUTHEN_SERVICE.addAccStudent(userDTO);
 //    }
-    ResponseEntity<String> addAccStudent(@Valid @RequestBody UserDTO userDTO) throws NoSuchAlgorithmException {
-        AUTHEN_SERVICE.addAccStudent(userDTO);
-        return ResponseEntity.ok("User is valid");
+    public ResponseEntity<Response> addAccStudent(@Valid @RequestBody UserDTO userDTO) throws NoSuchAlgorithmException {
+//        AUTHEN_SERVICE.addAccStudent(userDTO);
+        return AUTHEN_SERVICE.addAccStudent(userDTO);
     }
 
     @PostMapping("/login")

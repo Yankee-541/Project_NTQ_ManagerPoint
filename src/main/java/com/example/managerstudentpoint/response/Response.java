@@ -1,5 +1,6 @@
 package com.example.managerstudentpoint.response;
 
+import com.example.managerstudentpoint.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
