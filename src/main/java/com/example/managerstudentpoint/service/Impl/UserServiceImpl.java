@@ -74,11 +74,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 );
     }
 
-    @Override
-    public UserDTO addAccStudent(UserDTO userDTO) {
-        USER_REPOSITORY.save(OBJECT_MAPPER.convertValue(userDTO,User.class));
-        return userDTO;
-    }
+//    @Override
+//    public UserDTO addAccStudent(UserDTO userDTO) {
+//        USER_REPOSITORY.save(OBJECT_MAPPER.convertValue(userDTO,User.class));
+//        return userDTO;
+//    }
 
     @Override
     public List<User> listAll() {

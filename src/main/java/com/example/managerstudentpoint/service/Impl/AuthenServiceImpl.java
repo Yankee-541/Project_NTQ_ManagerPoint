@@ -63,6 +63,7 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
             if (!USER_REPOSITORY.existsByPhoneNumber(userDTO.getPhoneNumber())) {
                 if (!USER_REPOSITORY.existsByEmail(userDTO.getEmail())){
                     userDTO.setPassword(Hashpass.hashPassword(userDTO.getPassword()));
+                    userDTO.setRollNumber(generateRollNumber());
                     USER_REPOSITORY.save(OBJECTMAPPER.convertValue(userDTO, User.class));
                     return ResponseEntity.status(HttpStatus.OK).body(new Response("Create sucess", "", userDTO, ""));
                 }else {
@@ -77,4 +78,15 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
             );
         }
     }
+
+    private String generateRollNumber() {
+        String lastRoll = USER_REPOSITORY.getLastRollNumber().substring(2);
+        int roll = Integer.parseInt(lastRoll.toString()) + 1;
+        String pre = "HE";
+        while (pre.length() + Integer.toString(roll).length() < 8) {
+            pre += "0";
+        }
+        return pre + roll;
+    }
+
 }

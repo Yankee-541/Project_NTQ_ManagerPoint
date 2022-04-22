@@ -9,6 +9,9 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -25,7 +28,11 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "user")
-public class User extends BaseEntity {
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column
     private String username;
 
@@ -57,15 +64,11 @@ public class User extends BaseEntity {
             mappedBy = "users", cascade = CascadeType.ALL
     )
     @JsonIgnore
-    @Autowired
     private List<Reports> reports = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "class_id", nullable = true)
-    @Autowired
     private GroupClass groupClass;
-
-
 
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",

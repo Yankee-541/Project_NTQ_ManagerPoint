@@ -23,7 +23,7 @@ public interface UserService {
             Integer size,
             Integer page);
 
-    UserDTO addAccStudent(UserDTO userDTO);
+//    UserDTO addAccStudent(UserDTO userDTO);
     UserDetails loadUserById(Long userId);
     List<User> listAll();
 }
