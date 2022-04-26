@@ -1,6 +1,7 @@
 package com.example.managerstudentpoint.service;
 
-import com.example.managerstudentpoint.dto.UserDTO;
+import com.example.managerstudentpoint.dto.StudentExportExcelDTO;
+import com.example.managerstudentpoint.entity.BaseExportExcelModel;
 import com.example.managerstudentpoint.entity.User;
 import com.example.managerstudentpoint.response.Response;
 import org.springframework.data.domain.Page;
@@ -25,5 +26,6 @@ public interface UserService {
 
 //    UserDTO addAccStudent(UserDTO userDTO);
     UserDetails loadUserById(Long userId);
-    List<User> listAll();
+//    List<User> listAll();
+    List<StudentExportExcelDTO> listAll();
 }

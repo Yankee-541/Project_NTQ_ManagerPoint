@@ -2,7 +2,9 @@ package com.example.managerstudentpoint.service.Impl;
 
 import com.example.managerstudentpoint.JwtUtil.JwtTokenProvider;
 import com.example.managerstudentpoint.dto.ReportsDTO;
+import com.example.managerstudentpoint.dto.StudentExportExcelDTO;
 import com.example.managerstudentpoint.dto.UserDTO;
+import com.example.managerstudentpoint.entity.BaseExportExcelModel;
 import com.example.managerstudentpoint.entity.CustomUserDetails;
 import com.example.managerstudentpoint.entity.User;
 import com.example.managerstudentpoint.repository.ReportRepository;
@@ -22,6 +24,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -37,15 +40,27 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public ResponseEntity<Response> details(Long id) {
         UserDTO userDTO = OBJECT_MAPPER.convertValue(USER_REPOSITORY.findById(id).orElse(null), UserDTO.class);
         ReportsDTO reportsDTO = OBJECT_MAPPER.convertValue(REPORT_REPOSITORY.findById(id).orElse(null), ReportsDTO.class);
-        if(userDTO == null){
+        if (userDTO == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new Response("Not found", "Don't have news with id: " + id, "", "")
             );
-        }else{
+        } else {
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new Response("Found","Found user have id: "+id, userDTO,reportsDTO)
+                    new Response("Found", "Found user have id: " + id, userDTO, reportsDTO)
             );
         }
+    }
+
+    @Override
+    public List<StudentExportExcelDTO> listAll() {
+        List<StudentExportExcelDTO> studentExportExcelDTO = new ArrayList<>();
+        List<User> userList = USER_REPOSITORY.findAll();
+        for (User user: userList){
+            StudentExportExcelDTO studentExportExcelDTO1 = OBJECT_MAPPER.convertValue(user, StudentExportExcelDTO.class);
+            studentExportExcelDTO.add(studentExportExcelDTO1);
+        }
+        return studentExportExcelDTO;
+//        return USER_REPOSITORY.findAll(Sort.by("email").ascending());
     }
 
     @Override
@@ -68,10 +83,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
                 email,
                 phoneNumber,
                 PageRequest.of(
-                        page-1,
+                        page - 1,
                         size,
                         Sort.by("rollNumber").descending())
-                );
+        );
     }
 
 //    @Override
@@ -80,10 +95,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 //        return userDTO;
 //    }
 
-    @Override
-    public List<User> listAll() {
-        return USER_REPOSITORY.findAll(Sort.by("email").ascending());
-    }
+
+//    @Override
+//    public List<User> listAll() {
+//        return USER_REPOSITORY.findAll(Sort.by("email").ascending());
+//    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -94,9 +110,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return new CustomUserDetails(user);
 
     }
+
     @Override
     public UserDetails loadUserById(Long userId) {
-        User user =USER_REPOSITORY.findById(userId).orElse(null);
+        User user = USER_REPOSITORY.findById(userId).orElse(null);
         return new CustomUserDetails(user);
     }
 }

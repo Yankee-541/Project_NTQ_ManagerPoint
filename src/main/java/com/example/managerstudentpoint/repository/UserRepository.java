@@ -30,7 +30,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
                     " and (:status = '' or :status = u.status) " +
                     " and (:email = '' or :email = u.email) " +
                     " and (:phoneNumber ='' or :phoneNumber = u.phoneNumber) ")
-
     Page<User> getUserByCondition(
             String fullName,
             String rollNumber,

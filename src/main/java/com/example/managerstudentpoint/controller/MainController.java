@@ -1,11 +1,14 @@
 package com.example.managerstudentpoint.controller;
 
 import com.example.managerstudentpoint.dto.AuthenRequestDTO;
+import com.example.managerstudentpoint.dto.StudentExportExcelDTO;
 import com.example.managerstudentpoint.dto.UserDTO;
+import com.example.managerstudentpoint.entity.BaseExportExcelModel;
 import com.example.managerstudentpoint.entity.User;
 import com.example.managerstudentpoint.exportExcel.StudentExportExcel;
 import com.example.managerstudentpoint.response.Response;
 import com.example.managerstudentpoint.service.AuthenService;
+import com.example.managerstudentpoint.service.Impl.ExportXLSXFileServiceImpl;
 import com.example.managerstudentpoint.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,6 +33,7 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +46,7 @@ public class MainController {
 
     private final UserService USER_SERVICE;
     private final AuthenService AUTHEN_SERVICE;
+    private final ExportXLSXFileServiceImpl exportExcelFileService;
 
     @GetMapping("")
     public Page<User> getUser(
@@ -87,16 +92,22 @@ public class MainController {
 
     @GetMapping("/export")
     public void exportToExcel(HttpServletResponse response) throws IOException {
-        response.setContentType("application/octet-stream");
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
-        String currentDateTime = dateFormat.format(new Date());
+//        response.setContentType("application/octet-stream");
+//        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+//        String currentDateTime = dateFormat.format(new Date());
+//
+//        String headerKey = "Content-Disposition";
+//        String headerValue = "attachment; filename=users_" + currentDateTime + ".xlsx";
+//        response.setHeader(headerKey, headerValue);
+//        List<User> userList = USER_SERVICE.listAll();
+//        StudentExportExcel studentExportExcel = new StudentExportExcel(userList);
+        List<BaseExportExcelModel> list =  new ArrayList<>();
 
-        String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename=users_" + currentDateTime + ".xlsx";
-        response.setHeader(headerKey, headerValue);
-        List<User> userList = USER_SERVICE.listAll();
-        StudentExportExcel studentExportExcel = new StudentExportExcel(userList);
-        studentExportExcel.export(response);
+        for (StudentExportExcelDTO user : USER_SERVICE.listAll()){
+            list.add(user);
+        }
+//        studentExportExcel.export(response);
+        exportExcelFileService.exportFile("test","repost student",list , StudentExportExcelDTO.class);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
