@@ -1,6 +1,5 @@
 package com.example.managerstudentpoint.response;
 
-import com.example.managerstudentpoint.dto.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -10,5 +9,12 @@ public class Response {
     private String status;
     private String message;
     private Object object;
-    private Object ob2;
+
+    public Response(String message) {
+        this.message = message;
+    }
+
+    public Response(Object object) {
+        this.object = object;
+    }
 }

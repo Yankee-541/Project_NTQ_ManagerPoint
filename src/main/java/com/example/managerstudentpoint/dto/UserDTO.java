@@ -2,15 +2,17 @@ package com.example.managerstudentpoint.dto;
 
 import javax.validation.constraints.NotBlank;
 
-import com.example.managerstudentpoint.entity.GroupClass;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.util.List;
+import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO extends BaseAbstractDTO<UserDTO> {
+    private Long id;
     @NotBlank(message = "Username is mandatory")
     private String username;
     @NotBlank(message = "Password is mandatory")
@@ -26,5 +28,5 @@ public class UserDTO extends BaseAbstractDTO<UserDTO> {
     private String address;
     private String rollNumber;
 //    private GroupClass class_id;
-    private List<String> roles;
+    private Set<String> role;
 }

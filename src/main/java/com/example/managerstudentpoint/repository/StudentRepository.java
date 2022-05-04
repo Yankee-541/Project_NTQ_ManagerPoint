@@ -9,10 +9,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    List<User> findAllByIdLike(String name);
+public interface StudentRepository extends JpaRepository<User, Long> {
+    List<User> findAllByIdLike(String id);
     List<User> findAllByGroupClass(GroupClass groupClass);
     User findByUsername(String username);
     boolean existsByUsername(String username);
@@ -23,13 +24,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
     String getLastRollNumber();
 
     @Query("select u from User u " +
-            "where (:rollNumber = '' or : rollNumber = u.rollNumber) " +
-                    " and (:fullName = '' or :fullName = u.fullName) " +
+            "where (:fullName = '' or :fullName = u.fullName) " +
+                    " and (:rollNumber = '' or : rollNumber = u.rollNumber) " +
                     " and (:gender = '' or :gender = u.gender) " +
                     " and (:address = '' or :address = u.address) " +
                     " and (:status = '' or :status = u.status) " +
                     " and (:email = '' or :email = u.email) " +
-                    " and (:phoneNumber ='' or :phoneNumber = u.phoneNumber) ")
+                    " and (:phoneNumber ='' or :phoneNumber = u.phoneNumber)" +
+            " ")
     Page<User> getUserByCondition(
             String fullName,
             String rollNumber,
@@ -39,6 +41,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             String email,
             String phoneNumber,
             Pageable pageable);
+
+//    Page<User> findAllByFullNameLikeAndAddressLikeAndEmailLike(String key, Pageable pageable);
 
     //    @Query(value =
 //            "select * from user u " +

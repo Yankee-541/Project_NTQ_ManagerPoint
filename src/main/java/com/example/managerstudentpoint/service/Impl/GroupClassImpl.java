@@ -1,11 +1,10 @@
 package com.example.managerstudentpoint.service.Impl;
 
 import com.example.managerstudentpoint.dto.GroupClassDTO;
-import com.example.managerstudentpoint.dto.UserDTO;
 import com.example.managerstudentpoint.entity.GroupClass;
 import com.example.managerstudentpoint.entity.User;
 import com.example.managerstudentpoint.repository.GroupClassRepository;
-import com.example.managerstudentpoint.repository.UserRepository;
+import com.example.managerstudentpoint.repository.StudentRepository;
 import com.example.managerstudentpoint.response.Response;
 import com.example.managerstudentpoint.service.GroupClassService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,7 +22,7 @@ import java.util.List;
 public class GroupClassImpl implements GroupClassService {
     private final ObjectMapper OBJECT_MAPPER;
     private final GroupClassRepository GROUPCLASS_REPO;
-    private final UserRepository USER_REPOSITORY;
+    private final StudentRepository USER_REPOSITORY;
 
     @Override
     public ResponseEntity<Response> classById(Long id) {
@@ -31,18 +30,18 @@ public class GroupClassImpl implements GroupClassService {
 //        UserDTO userDTO = OBJECT_MAPPER.convertValue(USER_REPOSITORY.findById(id).orElse(null),UserDTO.class);
         if (groupClassDTO == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new Response("Not found", "Don't have class with id: " + id, "", "")
+                    new Response("Not found", "Don't have class with id: " + id, "")
             );
         }else{
-            List<User> userList = USER_REPOSITORY.findAllByGroupClass(new GroupClass(id, null));
+            List<User> userList = USER_REPOSITORY.findAllByGroupClass(new GroupClass(id,null));
             if(!userList.isEmpty()){
                 groupClassDTO.setUserList(userList);
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        new Response("Found","Found class have class_id: "+id, groupClassDTO,null)
+                        new Response("Found","Found class have class_id: "+id, groupClassDTO)
                 );
             }
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new Response("Found","Found class have class_id: "+id, groupClassDTO,null)
+                    new Response("Found","Found class have class_id: "+id, groupClassDTO)
             );
 
         }

@@ -1,16 +1,15 @@
 package com.example.managerstudentpoint.service.Impl;
 
 import com.example.managerstudentpoint.JwtUtil.JwtTokenProvider;
-import com.example.managerstudentpoint.dto.ReportsDTO;
 import com.example.managerstudentpoint.dto.StudentExportExcelDTO;
 import com.example.managerstudentpoint.dto.UserDTO;
-import com.example.managerstudentpoint.entity.BaseExportExcelModel;
 import com.example.managerstudentpoint.entity.CustomUserDetails;
 import com.example.managerstudentpoint.entity.User;
+import com.example.managerstudentpoint.entity.UserDetailsImpl;
 import com.example.managerstudentpoint.repository.ReportRepository;
-import com.example.managerstudentpoint.repository.UserRepository;
+import com.example.managerstudentpoint.repository.StudentRepository;
 import com.example.managerstudentpoint.response.Response;
-import com.example.managerstudentpoint.service.UserService;
+import com.example.managerstudentpoint.service.StudentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,23 +29,23 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @Transactional
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class StudentServiceImpl implements StudentService, UserDetailsService {
     private final ObjectMapper OBJECT_MAPPER;
-    private final UserRepository USER_REPOSITORY;
+    private final StudentRepository USER_REPOSITORY;
     private final ReportRepository REPORT_REPOSITORY;
     private JwtTokenProvider JWT_UTIL;
 
     @Override
     public ResponseEntity<Response> details(Long id) {
         UserDTO userDTO = OBJECT_MAPPER.convertValue(USER_REPOSITORY.findById(id).orElse(null), UserDTO.class);
-        ReportsDTO reportsDTO = OBJECT_MAPPER.convertValue(REPORT_REPOSITORY.findById(id).orElse(null), ReportsDTO.class);
+//        ReportsDTO reportsDTO = OBJECT_MAPPER.convertValue(REPORT_REPOSITORY.findById(id).orElse(null), ReportsDTO.class);
         if (userDTO == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new Response("Not found", "Don't have news with id: " + id, "", "")
+                    new Response("Not found", "Don't have news with id: " + id, "")
             );
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new Response("Found", "Found user have id: " + id, userDTO, reportsDTO)
+                    new Response("Found", "Found user have id: " + id, userDTO)
             );
         }
     }
@@ -55,7 +54,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     public List<StudentExportExcelDTO> listAll() {
         List<StudentExportExcelDTO> studentExportExcelDTO = new ArrayList<>();
         List<User> userList = USER_REPOSITORY.findAll();
-        for (User user: userList){
+        for (User user : userList) {
             StudentExportExcelDTO studentExportExcelDTO1 = OBJECT_MAPPER.convertValue(user, StudentExportExcelDTO.class);
             studentExportExcelDTO.add(studentExportExcelDTO1);
         }
@@ -102,14 +101,24 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 //    }
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = USER_REPOSITORY.findByUsername(username);
-        if (user == null) {
+        User student = USER_REPOSITORY.findByUsername(username);
+        if (student == null) {
             throw new UsernameNotFoundException(username);
         }
-        return new CustomUserDetails(user);
+        return UserDetailsImpl.built(student);
+//        return new CustomUserDetails(user);
 
     }
+
+//    @Override
+//    @Transactional
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        User student = USER_REPOSITORY.findByUsername(username)
+//                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+//        return UserDetailsImpl.built(student);
+//    }
 
     @Override
     public UserDetails loadUserById(Long userId) {

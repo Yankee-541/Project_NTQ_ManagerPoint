@@ -7,7 +7,8 @@ import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ReportsDTO extends BaseAbstractDTO<ReportsDTO> {
+public class ReportsDTO{
+    private Long id;
     private Double point;
     private User users;
     private Subject subject;

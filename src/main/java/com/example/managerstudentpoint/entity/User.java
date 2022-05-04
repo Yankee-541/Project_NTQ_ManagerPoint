@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -60,6 +60,37 @@ public class User {
     @Column(name = "phonenumber")
     private String phoneNumber;
 
+    public User(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
+
+    public User(String username, String password, String fullName, String rollNumber, String gender, String address, String status, String email, String phoneNumber) {
+        this.username = username;
+        this.password = password;
+        this.fullName = fullName;
+        this.rollNumber = rollNumber;
+        this.gender = gender;
+        this.address = address;
+        this.status = status;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+    }
+
+    public User(Long id, String username, String password, String fullName, String rollNumber, String gender, String address, String status, String email, String phoneNumber) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.fullName = fullName;
+        this.rollNumber = rollNumber;
+        this.gender = gender;
+        this.address = address;
+        this.status = status;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+    }
+
     @OneToMany(
             mappedBy = "users", cascade = CascadeType.ALL
     )
@@ -70,10 +101,10 @@ public class User {
     @JoinColumn(name = "class_id", nullable = true)
     private GroupClass groupClass;
 
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+//    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roleList = new HashSet<>();
-
 }
