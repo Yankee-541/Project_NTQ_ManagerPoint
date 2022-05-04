@@ -117,7 +117,7 @@ public class MainController {
 
     @PutMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateStudent(@Validated @RequestBody UserDTO updateStudent) throws NoSuchAlgorithmException{
+    public ResponseEntity<?> updateStudent(@Validated @RequestBody UserDTO updateStudent) throws NoSuchAlgorithmException {
         return AUTHEN_SERVICE.updateStudent(updateStudent);
     }
 

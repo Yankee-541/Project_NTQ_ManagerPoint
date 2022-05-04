@@ -8,6 +8,7 @@ import com.example.managerstudentpoint.dto.UserDTO;
 import com.example.managerstudentpoint.entity.Role;
 import com.example.managerstudentpoint.entity.User;
 import com.example.managerstudentpoint.entity.UserDetailsImpl;
+import com.example.managerstudentpoint.repository.GroupClassRepository;
 import com.example.managerstudentpoint.repository.RoleRepository;
 import com.example.managerstudentpoint.repository.StudentRepository;
 import com.example.managerstudentpoint.response.Response;
@@ -39,32 +40,38 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AuthenServiceImpl implements AuthenService, UserDetailsService {
 
-    StudentRepository STUDENT_REPOSITORY;
-    ObjectMapper OBJECTMAPPER;
+    StudentRepository studentRepository;
+    ObjectMapper objectmapper;
     AuthenticationManager authenticationMana;
     JwtUtils jwtUtils;
     PasswordEncoder passwordEncoder;
     RoleRepository roleRepository;
     StudentService studentService;
+    GroupClassRepository groupClassRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = STUDENT_REPOSITORY.findByUsername(username);
+        User user = studentRepository.findByUsername(username);
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), new ArrayList<>());
     }
 
     @Override
-    public ResponseEntity<Response> signup(UserDTO signUpRequest) throws NoSuchAlgorithmException {
-        if (STUDENT_REPOSITORY.existsByUsername(signUpRequest.getUsername())) {
+    public ResponseEntity<Response> signup(UserDTO signUpRequest){
+        if (studentRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body(new Response("Error: Username is already taken!",""));
         }
-        if (STUDENT_REPOSITORY.existsByEmail(signUpRequest.getEmail())) {
+        if (studentRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
                     .body(new Response("Error: Email is already in use!",""));
         }
+//        if (!groupClassRepository.existsById(signUpRequest.getGroupClass())){
+//            return ResponseEntity
+//                    .badRequest()
+//                    .body(new Response("Error: Group class is already taken!",""));
+//        }
         User user = new User(
                 signUpRequest.getUsername(),
                 passwordEncoder.encode(signUpRequest.getPassword()),
@@ -76,6 +83,8 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
                 signUpRequest.getEmail(),
                 signUpRequest.getPhoneNumber()
         );
+        user.setGroupClass(signUpRequest.getGroupClass());
+
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
         if (strRoles == null) {
@@ -103,13 +112,13 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
             });
         }
         user.setRoleList(roles);
-        STUDENT_REPOSITORY.save(user);
+        studentRepository.save(user);
         return ResponseEntity.status(HttpStatus.OK).body(new Response("Create sucess",user));
     }
 
     @Override
     public ResponseEntity<JwtResponse> login(LoginRequestDTO loginRequest) throws NoSuchAlgorithmException {
-        if (STUDENT_REPOSITORY.existsByUsername(loginRequest.getUsername())) {
+        if (studentRepository.existsByUsername(loginRequest.getUsername())) {
             Authentication authentication = authenticationMana.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
             );
@@ -133,18 +142,18 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
 
     @Override
     public UserDetails loadUserById(Long userId) {
-        User user = (User) OBJECTMAPPER.convertValue(STUDENT_REPOSITORY.findById(userId).orElse(null),
+        User user = (User) objectmapper.convertValue(studentRepository.findById(userId).orElse(null),
                 StudentRepository.class);
         return (UserDetails) user;
     }
 
     @Override
     public ResponseEntity<Response> addAccStudent(UserDTO userDTO) {
-        if (!STUDENT_REPOSITORY.existsByUsername(userDTO.getUsername())) {
-            if (!STUDENT_REPOSITORY.existsByPhoneNumber(userDTO.getPhoneNumber())) {
-                if (!STUDENT_REPOSITORY.existsByEmail(userDTO.getEmail())) {
+        if (!studentRepository.existsByUsername(userDTO.getUsername())) {
+            if (!studentRepository.existsByPhoneNumber(userDTO.getPhoneNumber())) {
+                if (!studentRepository.existsByEmail(userDTO.getEmail())) {
                     userDTO.setRollNumber(generateRollNumber());
-                    STUDENT_REPOSITORY.save(OBJECTMAPPER.convertValue(userDTO, User.class));
+                    studentRepository.save(objectmapper.convertValue(userDTO, User.class));
                     return ResponseEntity.status(HttpStatus.OK).body(new Response("Create sucess", userDTO));
                 } else {
                     return ResponseEntity.status(HttpStatus.OK).body(new Response("Email is exist", ""));
@@ -162,7 +171,7 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
     @Override
     public HttpStatus deleteStudent(Long[] ids) {
         for (long id : ids) {
-            STUDENT_REPOSITORY.deleteById(id);
+            studentRepository.deleteById(id);
         }
         return HttpStatus.OK;
     }
@@ -209,12 +218,12 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
             });
         }
         user.setRoleList(roles);
-        STUDENT_REPOSITORY.save(user);
+        studentRepository.save(user);
         return ResponseEntity.ok(new Response("", user));
     }
 
     private String generateRollNumber() {
-        String lastRoll = STUDENT_REPOSITORY.getLastRollNumber().substring(2);
+        String lastRoll = studentRepository.getLastRollNumber().substring(2);
         int roll = Integer.parseInt(lastRoll.toString()) + 1;
         String pre = "HE";
         while (pre.length() + Integer.toString(roll).length() < 8) {

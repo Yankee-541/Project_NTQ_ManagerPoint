@@ -43,7 +43,6 @@ public class StudentController {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-//    private final Integer PAGE_SIZE = 5;
     @GetMapping("/list")
     public ResponseEntity<Response> getAllStudents(
             @RequestParam(name = "key", defaultValue = "") String key,

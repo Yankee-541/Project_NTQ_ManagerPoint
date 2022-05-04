@@ -9,6 +9,8 @@ import java.util.List;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GroupClassDTO {
+    private Long id;
     private String className;
+    private Boolean status;
     private List<User> userList;
 }

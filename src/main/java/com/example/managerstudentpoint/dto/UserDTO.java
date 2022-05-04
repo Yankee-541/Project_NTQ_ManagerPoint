@@ -2,6 +2,7 @@ package com.example.managerstudentpoint.dto;
 
 import javax.validation.constraints.NotBlank;
 
+import com.example.managerstudentpoint.entity.GroupClass;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,6 +28,6 @@ public class UserDTO extends BaseAbstractDTO<UserDTO> {
     private String gender;
     private String address;
     private String rollNumber;
-//    private GroupClass class_id;
+    private GroupClass groupClass;
     private Set<String> role;
 }

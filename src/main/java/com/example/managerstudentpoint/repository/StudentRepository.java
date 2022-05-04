@@ -12,7 +12,6 @@ import java.util.List;
 
 @Repository
 public interface StudentRepository extends JpaRepository<User, Long> {
-    List<User> findAllByIdLike(String id);
 
     List<User> findAllByGroupClass(GroupClass groupClass);
 
@@ -25,8 +24,8 @@ public interface StudentRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
 
     @Query(value = "select u from User u left join u.groupClass c " +
-            "where concat(u.fullName, u.rollNumber, u.address, u.username, u.email ) like %?1% or c.className like %?1% ")
-    Page<User> getUsersAllByFullNameAndRollNumberAndAddressAndUsernameAndEmail(String key, Pageable pageable);
+            "where (concat(u.fullName, u.rollNumber, u.username ) like %:key% or c.className like %:key%) and (:status = u.status) ")
+    Page<User> getUsersAllByFullNameAndRollNumberAndUsername(String status,String key, Pageable pageable);
 
     @Query(value = "select rollnumber from mangerstudentpoint.user order by rollnumber desc LIMIT 1;", nativeQuery = true)
     String getLastRollNumber();

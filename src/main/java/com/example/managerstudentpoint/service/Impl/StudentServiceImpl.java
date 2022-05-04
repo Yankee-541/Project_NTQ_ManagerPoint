@@ -47,7 +47,8 @@ public class StudentServiceImpl implements StudentService, UserDetailsService {
 
     @Override
     public ResponseEntity<Response> getAllStudents(String key, Integer page, Integer pageSize) {
-        List<User> studentList = USER_REPOSITORY.getUsersAllByFullNameAndRollNumberAndAddressAndUsernameAndEmail(
+        List<User> studentList = USER_REPOSITORY.getUsersAllByFullNameAndRollNumberAndUsername(
+                "deactive",
                 key,
                 PageRequest.of(page - 1, pageSize)).getContent();
         if (studentList.isEmpty()) {

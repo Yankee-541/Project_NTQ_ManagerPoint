@@ -30,7 +30,6 @@ public class ExportXLSXFileServiceImpl implements ExportExcelFileService {
     public File exportFile(String fileName, String sheetName, List<BaseExportExcelModel> dataExport, Class<? extends BaseExportExcelModel> classType) {
         File excelFile = null;
         try {
-//            String destionationPath = "F:\\Documents\\hoc_SpringBoost";
             Path pathExcelFile = Files.createTempFile(Paths.get("C:\\"),fileName,".xlsx");
             excelFile = pathExcelFile.toFile();
 
@@ -43,7 +42,6 @@ public class ExportXLSXFileServiceImpl implements ExportExcelFileService {
             e.printStackTrace();
         } finally {
             if (excelFile != null && excelFile.exists()) {
-//                excelFile.deleteOnExit();
             }
         }
         return null;

@@ -39,7 +39,11 @@ public class GroupClass{
         this.className = className;
     }
 
-    public GroupClass() {
+    public GroupClass(String className, Boolean status) {
+        this.className = className;
+        this.status = status;
+    }
 
+    public GroupClass() {
     }
 }

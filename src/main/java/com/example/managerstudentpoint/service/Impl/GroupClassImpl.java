@@ -26,23 +26,49 @@ public class GroupClassImpl implements GroupClassService {
 
     @Override
     public ResponseEntity<Response> classById(Long id) {
-        GroupClassDTO groupClassDTO = OBJECT_MAPPER.convertValue(GROUPCLASS_REPO.findById(id).orElse(null),GroupClassDTO.class);
-        if (groupClassDTO == null){
+        GroupClassDTO groupClassDTO = OBJECT_MAPPER.convertValue(GROUPCLASS_REPO.findById(id).orElse(null), GroupClassDTO.class);
+        if (groupClassDTO == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new Response("Don't have class with id: " + id, "")
             );
-        }else{
-            List<User> userList = USER_REPOSITORY.findAllByGroupClass(new GroupClass(id,null));
-            if(!userList.isEmpty()){
+        } else {
+            List<User> userList = USER_REPOSITORY.findAllByGroupClass(new GroupClass(id, null));
+            if (!userList.isEmpty()) {
                 groupClassDTO.setUserList(userList);
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        new Response("Found class have class_id: "+id, groupClassDTO)
+                        new Response("Found class have class_id: " + id, groupClassDTO)
                 );
             }
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new Response("Found class have class_id: "+id, groupClassDTO)
+                    new Response("Found class have class_id: " + id, groupClassDTO)
             );
 
         }
+    }
+
+    @Override
+    public HttpStatus deleteClass(Long[] ids) {
+        for (long id : ids) {
+            GROUPCLASS_REPO.deleteById(id);
+        }
+        return HttpStatus.OK;
+    }
+
+    @Override
+    public ResponseEntity<Response> addClass(GroupClassDTO groupClassDTO) {
+        if (GROUPCLASS_REPO.existsByClassName(groupClassDTO.getClassName())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new Response("Error: Group class is already taken!", ""));
+        }
+        GroupClass groupClass = new GroupClass(
+                groupClassDTO.getClassName(),
+                groupClassDTO.getStatus()
+        );
+        GROUPCLASS_REPO.save(groupClass);
+
+        return ResponseEntity
+                .badRequest()
+                .body(new Response("", groupClassDTO));
     }
 }
