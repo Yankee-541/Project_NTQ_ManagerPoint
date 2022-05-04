@@ -60,13 +60,15 @@ public class User {
     @Column(name = "phonenumber")
     private String phoneNumber;
 
-    public User(String username, String password, String email) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-    }
-
-    public User(String username, String password, String fullName, String rollNumber, String gender, String address, String status, String email, String phoneNumber) {
+    public User(String username,
+                String password,
+                String fullName,
+                String rollNumber,
+                String gender,
+                String address,
+                String status,
+                String email,
+                String phoneNumber) {
         this.username = username;
         this.password = password;
         this.fullName = fullName;
@@ -78,7 +80,16 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
-    public User(Long id, String username, String password, String fullName, String rollNumber, String gender, String address, String status, String email, String phoneNumber) {
+    public User(Long id,
+                String username,
+                String password,
+                String fullName,
+                String rollNumber,
+                String gender,
+                String address,
+                String status,
+                String email,
+                String phoneNumber) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -95,13 +106,12 @@ public class User {
             mappedBy = "users", cascade = CascadeType.ALL
     )
     @JsonIgnore
-    private List<Reports> reports = new ArrayList<>();
+    private List<Score> reports = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "class_id", nullable = true)
     private GroupClass groupClass;
 
-//    @ManyToMany
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),

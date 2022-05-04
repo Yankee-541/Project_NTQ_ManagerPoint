@@ -58,12 +58,12 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
         if (STUDENT_REPOSITORY.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new Response("Error: Username is already taken!"));
+                    .body(new Response("Error: Username is already taken!",""));
         }
         if (STUDENT_REPOSITORY.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new Response("Error: Email is already in use!"));
+                    .body(new Response("Error: Email is already in use!",""));
         }
         User user = new User(
                 signUpRequest.getUsername(),
@@ -104,7 +104,7 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
         }
         user.setRoleList(roles);
         STUDENT_REPOSITORY.save(user);
-        return ResponseEntity.status(HttpStatus.OK).body(new Response("Create sucess", "",user));
+        return ResponseEntity.status(HttpStatus.OK).body(new Response("Create sucess",user));
     }
 
     @Override
@@ -145,16 +145,16 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
                 if (!STUDENT_REPOSITORY.existsByEmail(userDTO.getEmail())) {
                     userDTO.setRollNumber(generateRollNumber());
                     STUDENT_REPOSITORY.save(OBJECTMAPPER.convertValue(userDTO, User.class));
-                    return ResponseEntity.status(HttpStatus.OK).body(new Response("Create sucess", "", userDTO));
+                    return ResponseEntity.status(HttpStatus.OK).body(new Response("Create sucess", userDTO));
                 } else {
-                    return ResponseEntity.status(HttpStatus.OK).body(new Response("Email is exist", "", ""));
+                    return ResponseEntity.status(HttpStatus.OK).body(new Response("Email is exist", ""));
                 }
             } else {
-                return ResponseEntity.status(HttpStatus.OK).body(new Response("Phone number is exist", "", ""));
+                return ResponseEntity.status(HttpStatus.OK).body(new Response("Phone number is exist",""));
             }
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new Response("Username is exist", "", "")
+                    new Response("Username is exist", "")
             );
         }
     }
@@ -210,7 +210,7 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
         }
         user.setRoleList(roles);
         STUDENT_REPOSITORY.save(user);
-        return ResponseEntity.ok(new Response(user));
+        return ResponseEntity.ok(new Response("", user));
     }
 
     private String generateRollNumber() {

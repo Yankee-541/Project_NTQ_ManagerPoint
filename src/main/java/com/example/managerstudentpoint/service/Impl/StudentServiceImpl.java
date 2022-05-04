@@ -1,12 +1,10 @@
 package com.example.managerstudentpoint.service.Impl;
 
-import com.example.managerstudentpoint.JwtUtil.JwtTokenProvider;
 import com.example.managerstudentpoint.dto.StudentExportExcelDTO;
 import com.example.managerstudentpoint.dto.UserDTO;
 import com.example.managerstudentpoint.entity.CustomUserDetails;
 import com.example.managerstudentpoint.entity.User;
 import com.example.managerstudentpoint.entity.UserDetailsImpl;
-import com.example.managerstudentpoint.repository.ReportRepository;
 import com.example.managerstudentpoint.repository.StudentRepository;
 import com.example.managerstudentpoint.response.Response;
 import com.example.managerstudentpoint.service.StudentService;
@@ -32,20 +30,37 @@ import java.util.List;
 public class StudentServiceImpl implements StudentService, UserDetailsService {
     private final ObjectMapper OBJECT_MAPPER;
     private final StudentRepository USER_REPOSITORY;
-    private final ReportRepository REPORT_REPOSITORY;
-    private JwtTokenProvider JWT_UTIL;
 
     @Override
     public ResponseEntity<Response> details(Long id) {
         UserDTO userDTO = OBJECT_MAPPER.convertValue(USER_REPOSITORY.findById(id).orElse(null), UserDTO.class);
-//        ReportsDTO reportsDTO = OBJECT_MAPPER.convertValue(REPORT_REPOSITORY.findById(id).orElse(null), ReportsDTO.class);
         if (userDTO == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new Response("Not found", "Don't have news with id: " + id, "")
+                    new Response("Don't have news with id: " + id, "")
             );
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new Response("Found", "Found user have id: " + id, userDTO)
+                    new Response("Found user have id: " + id, userDTO)
+            );
+        }
+    }
+
+    @Override
+    public ResponseEntity<Response> getAllStudents(String key, Integer page, Integer pageSize) {
+        List<User> studentList = USER_REPOSITORY.getUsersAllByFullNameAndRollNumberAndAddressAndUsernameAndEmail(
+                key,
+                PageRequest.of(page - 1, pageSize)).getContent();
+        if (studentList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new Response("Don't have students","")
+            );
+        } else {
+            List<UserDTO> userDTOList = new ArrayList<>();
+            for (User student : studentList) {
+                userDTOList.add(OBJECT_MAPPER.convertValue(student, UserDTO.class));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new Response("",userDTOList)
             );
         }
     }
@@ -55,11 +70,12 @@ public class StudentServiceImpl implements StudentService, UserDetailsService {
         List<StudentExportExcelDTO> studentExportExcelDTO = new ArrayList<>();
         List<User> userList = USER_REPOSITORY.findAll();
         for (User user : userList) {
-            StudentExportExcelDTO studentExportExcelDTO1 = OBJECT_MAPPER.convertValue(user, StudentExportExcelDTO.class);
+            StudentExportExcelDTO studentExportExcelDTO1 = OBJECT_MAPPER.convertValue(
+                    user,
+                    StudentExportExcelDTO.class);
             studentExportExcelDTO.add(studentExportExcelDTO1);
         }
         return studentExportExcelDTO;
-//        return USER_REPOSITORY.findAll(Sort.by("email").ascending());
     }
 
     @Override
@@ -88,18 +104,6 @@ public class StudentServiceImpl implements StudentService, UserDetailsService {
         );
     }
 
-//    @Override
-//    public UserDTO addAccStudent(UserDTO userDTO) {
-//        USER_REPOSITORY.save(OBJECT_MAPPER.convertValue(userDTO,User.class));
-//        return userDTO;
-//    }
-
-
-//    @Override
-//    public List<User> listAll() {
-//        return USER_REPOSITORY.findAll(Sort.by("email").ascending());
-//    }
-
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -108,17 +112,8 @@ public class StudentServiceImpl implements StudentService, UserDetailsService {
             throw new UsernameNotFoundException(username);
         }
         return UserDetailsImpl.built(student);
-//        return new CustomUserDetails(user);
-
     }
 
-//    @Override
-//    @Transactional
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        User student = USER_REPOSITORY.findByUsername(username)
-//                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
-//        return UserDetailsImpl.built(student);
-//    }
 
     @Override
     public UserDetails loadUserById(Long userId) {

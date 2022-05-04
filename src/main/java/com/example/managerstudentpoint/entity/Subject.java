@@ -25,11 +25,14 @@ public class Subject{
     @Column(name = "name_subject")
     private String nameSubject;
 
-//    @OneToMany(
-//                mappedBy = "subject", cascade =  CascadeType.ALL, fetch = FetchType.EAGER
-//    )
-//    @Autowired
-//    private List<Reports> reports = new ArrayList<>();
+    @Column(name = "status")
+    private Boolean status;
+
+    @OneToMany(
+            mappedBy = "subject", cascade = CascadeType.ALL, fetch = FetchType.EAGER
+    )
+    @Autowired
+    private List<Score> reports = new ArrayList<>();
 
 
 }

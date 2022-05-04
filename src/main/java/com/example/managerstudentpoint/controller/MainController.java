@@ -44,7 +44,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("api/student")
-//@AllArgsConstructor
 public class MainController {
     @Autowired
     AuthenticationManager authenticationMana;

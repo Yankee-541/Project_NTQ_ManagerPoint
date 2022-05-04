@@ -25,6 +25,9 @@ public class GroupClass{
     @Column(name = "class_name")
     private String className;
 
+    @Column(name = "status")
+    private Boolean status;
+
     @OneToMany(
             mappedBy = "groupClass",cascade = CascadeType.ALL
     )

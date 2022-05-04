@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface StudentService {
     ResponseEntity<Response> details(Long id);
+    ResponseEntity<Response> getAllStudents(String key, Integer page, Integer pageSize);
 
     Page<User> getUser(
             String fullName,

@@ -27,21 +27,20 @@ public class GroupClassImpl implements GroupClassService {
     @Override
     public ResponseEntity<Response> classById(Long id) {
         GroupClassDTO groupClassDTO = OBJECT_MAPPER.convertValue(GROUPCLASS_REPO.findById(id).orElse(null),GroupClassDTO.class);
-//        UserDTO userDTO = OBJECT_MAPPER.convertValue(USER_REPOSITORY.findById(id).orElse(null),UserDTO.class);
         if (groupClassDTO == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new Response("Not found", "Don't have class with id: " + id, "")
+                    new Response("Don't have class with id: " + id, "")
             );
         }else{
             List<User> userList = USER_REPOSITORY.findAllByGroupClass(new GroupClass(id,null));
             if(!userList.isEmpty()){
                 groupClassDTO.setUserList(userList);
                 return ResponseEntity.status(HttpStatus.OK).body(
-                        new Response("Found","Found class have class_id: "+id, groupClassDTO)
+                        new Response("Found class have class_id: "+id, groupClassDTO)
                 );
             }
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new Response("Found","Found class have class_id: "+id, groupClassDTO)
+                    new Response("Found class have class_id: "+id, groupClassDTO)
             );
 
         }

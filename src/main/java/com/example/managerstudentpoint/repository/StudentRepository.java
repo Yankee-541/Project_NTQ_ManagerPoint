@@ -9,28 +9,36 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface StudentRepository extends JpaRepository<User, Long> {
     List<User> findAllByIdLike(String id);
+
     List<User> findAllByGroupClass(GroupClass groupClass);
+
     User findByUsername(String username);
+
     boolean existsByUsername(String username);
+
     boolean existsByPhoneNumber(String phoneNum);
+
     boolean existsByEmail(String email);
+
+    @Query(value = "select u from User u left join u.groupClass c " +
+            "where concat(u.fullName, u.rollNumber, u.address, u.username, u.email ) like %?1% or c.className like %?1% ")
+    Page<User> getUsersAllByFullNameAndRollNumberAndAddressAndUsernameAndEmail(String key, Pageable pageable);
 
     @Query(value = "select rollnumber from mangerstudentpoint.user order by rollnumber desc LIMIT 1;", nativeQuery = true)
     String getLastRollNumber();
 
     @Query("select u from User u " +
             "where (:fullName = '' or :fullName = u.fullName) " +
-                    " and (:rollNumber = '' or : rollNumber = u.rollNumber) " +
-                    " and (:gender = '' or :gender = u.gender) " +
-                    " and (:address = '' or :address = u.address) " +
-                    " and (:status = '' or :status = u.status) " +
-                    " and (:email = '' or :email = u.email) " +
-                    " and (:phoneNumber ='' or :phoneNumber = u.phoneNumber)" +
+            " and (:rollNumber = '' or : rollNumber = u.rollNumber) " +
+            " and (:gender = '' or :gender = u.gender) " +
+            " and (:address = '' or :address = u.address) " +
+            " and (:status = '' or :status = u.status) " +
+            " and (:email = '' or :email = u.email) " +
+            " and (:phoneNumber ='' or :phoneNumber = u.phoneNumber)" +
             " ")
     Page<User> getUserByCondition(
             String fullName,
