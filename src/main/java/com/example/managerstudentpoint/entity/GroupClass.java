@@ -1,6 +1,7 @@
 package com.example.managerstudentpoint.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.persistence.CascadeType;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Entity
 @Data
-//@AllArgsConstructor
+@AllArgsConstructor
 @Table(name = "class")
 public class GroupClass{
     @Id

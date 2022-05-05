@@ -27,7 +27,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 public class ExportXLSXFileServiceImpl implements ExportExcelFileService {
     @Override
-    public File exportFile(String fileName, String sheetName, List<BaseExportExcelModel> dataExport, Class<? extends BaseExportExcelModel> classType) {
+    public File exportFile(String fileName,
+                           String sheetName,
+                           List<BaseExportExcelModel> dataExport,
+                           Class<? extends BaseExportExcelModel> classType) {
         File excelFile = null;
         try {
             Path pathExcelFile = Files.createTempFile(Paths.get("C:\\"),fileName,".xlsx");
@@ -47,7 +50,9 @@ public class ExportXLSXFileServiceImpl implements ExportExcelFileService {
         return null;
     }
 
-    public <T> POIXMLDocument exportExcel(List<BaseExportExcelModel> listData, Class<? extends BaseExportExcelModel> classType, String sheetName) {
+    public <T> POIXMLDocument exportExcel(List<BaseExportExcelModel> listData,
+                                          Class<? extends BaseExportExcelModel> classType,
+                                          String sheetName) {
         XSSFWorkbook workbook = new XSSFWorkbook();
         try {
             Constructor<? extends BaseExportExcelModel> ctor = classType.getConstructor();

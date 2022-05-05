@@ -118,11 +118,4 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roleList = new HashSet<>();
 
-    public GroupClass getGroupClass() {
-        return groupClass;
-    }
-
-    public void setGroupClass(GroupClass groupClass) {
-        this.groupClass = groupClass;
-    }
 }

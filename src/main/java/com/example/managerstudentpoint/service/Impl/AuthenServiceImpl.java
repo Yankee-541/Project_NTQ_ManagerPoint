@@ -5,6 +5,7 @@ import com.example.managerstudentpoint.common.ERole;
 import com.example.managerstudentpoint.dto.JwtResponse;
 import com.example.managerstudentpoint.dto.LoginRequestDTO;
 import com.example.managerstudentpoint.dto.UserDTO;
+import com.example.managerstudentpoint.entity.GroupClass;
 import com.example.managerstudentpoint.entity.Role;
 import com.example.managerstudentpoint.entity.User;
 import com.example.managerstudentpoint.entity.UserDetailsImpl;
@@ -67,11 +68,11 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
                     .badRequest()
                     .body(new Response("Error: Email is already in use!",""));
         }
-//        if (!groupClassRepository.existsById(signUpRequest.getGroupClass())){
-//            return ResponseEntity
-//                    .badRequest()
-//                    .body(new Response("Error: Group class is already taken!",""));
-//        }
+        if (!groupClassRepository.existsById(signUpRequest.getGroupClass().getId())){
+            return ResponseEntity
+                    .badRequest()
+                    .body(new Response("Error: Group class isn't exist!",""));
+        }
         User user = new User(
                 signUpRequest.getUsername(),
                 passwordEncoder.encode(signUpRequest.getPassword()),
@@ -83,8 +84,11 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
                 signUpRequest.getEmail(),
                 signUpRequest.getPhoneNumber()
         );
-        user.setGroupClass(signUpRequest.getGroupClass());
 
+        GroupClass groupclass = signUpRequest.getGroupClass();
+        if (groupClassRepository.existsById(signUpRequest.getGroupClass().getId())){
+            user.setGroupClass(groupclass);
+        }
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
         if (strRoles == null) {
