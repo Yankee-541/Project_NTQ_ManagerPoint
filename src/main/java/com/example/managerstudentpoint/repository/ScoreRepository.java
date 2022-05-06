@@ -12,14 +12,13 @@ import java.util.List;
 
 @Repository
 public interface ScoreRepository extends JpaRepository<Score, Long> {
-//    @Query("select s from Score s join s.users st join s.subject sc " +
-//            " where " +
-//            "s.users.isDelete =:isDelete and " +
-//            "sc.id =:key")
-//    Page<Score> findAllBySubject_Id (Long key, Pageable pageable);
+
     Page<Score> findAllBySubject(Subject subject, Pageable pageable);
-//    Score findByStudentAndAndCourse(User user, Subject subject);
-//
-//    List<Score> findAllByStudent(User user);
+
+    @Query("select s from Score s join s.users u" +
+            " where s.users.isDelete=:isDelete and s.subject.id = :sub_id and  s.users.groupClass.id =:c_id")
+    List<Score> getScoresByGroupClassAndSubject(boolean isDelete,Long sub_id, Long c_id);
+
+
 
 }

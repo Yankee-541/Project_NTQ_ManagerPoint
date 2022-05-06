@@ -5,4 +5,5 @@ import org.springframework.http.ResponseEntity;
 
 public interface SubjectService {
     ResponseEntity<Response> getStudentsBySubject(String key, Integer page, Integer pageSize);
+
 }

@@ -2,14 +2,12 @@ package com.example.managerstudentpoint.controller;
 
 import com.example.managerstudentpoint.JwtUtil.JwtUtils;
 import com.example.managerstudentpoint.dto.LoginRequestDTO;
-import com.example.managerstudentpoint.dto.StudentExportExcelDTO;
 import com.example.managerstudentpoint.dto.UserDTO;
-import com.example.managerstudentpoint.entity.BaseExportExcelModel;
 import com.example.managerstudentpoint.repository.RoleRepository;
 import com.example.managerstudentpoint.repository.UserRepository;
 import com.example.managerstudentpoint.response.Response;
 import com.example.managerstudentpoint.service.AuthenService;
-import com.example.managerstudentpoint.service.Impl.XLSXFileServiceImpl;
+import com.example.managerstudentpoint.service.ScoreService;
 import com.example.managerstudentpoint.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,12 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -58,13 +52,13 @@ public class MainController {
     AuthenService AUTHEN_SERVICE;
 
     @Autowired
-    XLSXFileServiceImpl exportExcelFileService;
-
-    @Autowired
     UserRepository studentRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    ScoreService scoreService;
 
     @GetMapping("/{id}")
     public ResponseEntity<Response> detail(@PathVariable Long id) {
@@ -95,15 +89,6 @@ public class MainController {
         return AUTHEN_SERVICE.updateStudent(updateStudent);
     }
 
-    @GetMapping("/export")
-    @PreAuthorize("hasRole('ADMIN')")
-    public void exportToExcel(HttpServletResponse response) throws IOException {
-        List<BaseExportExcelModel> list = new ArrayList<>();
-        for (StudentExportExcelDTO user : USER_SERVICE.listAll()) {
-            list.add(user);
-        }
-        exportExcelFileService.exportFile("test", "repost student", list, StudentExportExcelDTO.class);
-    }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)

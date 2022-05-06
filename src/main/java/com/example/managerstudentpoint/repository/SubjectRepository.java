@@ -11,4 +11,7 @@ import org.springframework.stereotype.Repository;
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
     @Query(value = "SELECT s FROM Subject s where (concat( s.nameSubject, s.id ) like %:key%) and (:status = s.status) ")
     Page<Subject> getSubjectByNameSubject(boolean status, String key, Pageable pageable);
+
+    boolean existsById(Long id);
+
 }
