@@ -2,11 +2,12 @@ package com.example.managerstudentpoint.controller;
 
 import com.example.managerstudentpoint.JwtUtil.JwtUtils;
 import com.example.managerstudentpoint.repository.RoleRepository;
-import com.example.managerstudentpoint.repository.StudentRepository;
+import com.example.managerstudentpoint.repository.UserRepository;
 import com.example.managerstudentpoint.response.Response;
 import com.example.managerstudentpoint.service.AuthenService;
-import com.example.managerstudentpoint.service.Impl.ExportXLSXFileServiceImpl;
+import com.example.managerstudentpoint.service.Impl.XLSXFileServiceImpl;
 import com.example.managerstudentpoint.service.StudentService;
+import com.example.managerstudentpoint.service.SubjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -32,13 +33,16 @@ public class StudentController {
     StudentService USER_SERVICE;
 
     @Autowired
+    SubjectService subjectService;
+
+    @Autowired
     AuthenService AUTHEN_SERVICE;
 
     @Autowired
-    ExportXLSXFileServiceImpl exportExcelFileService;
+    XLSXFileServiceImpl exportExcelFileService;
 
     @Autowired
-    StudentRepository studentRepository;
+    UserRepository studentRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -53,5 +57,17 @@ public class StudentController {
             page = 1;
         }
         return USER_SERVICE.getAllStudents(key, page, pageSize);
+    }
+
+    @GetMapping("/subject")
+    public ResponseEntity<Response> getAllStudentsBySubject(
+            @RequestParam(name = "key", defaultValue = "") String key,
+            @RequestParam(name = "size", defaultValue = "5") Integer pageSize,
+            @RequestParam(name = "page", defaultValue = "1") Integer page
+    ) {
+        if (page <= 0) {
+            page = 1;
+        }
+        return subjectService.getStudentsBySubject(key, page, pageSize);
     }
 }

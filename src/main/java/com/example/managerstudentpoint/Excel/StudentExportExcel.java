@@ -1,4 +1,4 @@
-package com.example.managerstudentpoint.exportExcel;
+package com.example.managerstudentpoint.Excel;
 
 import com.example.managerstudentpoint.entity.User;
 import lombok.AllArgsConstructor;

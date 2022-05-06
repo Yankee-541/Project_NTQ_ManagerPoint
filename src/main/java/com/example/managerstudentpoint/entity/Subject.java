@@ -10,10 +10,15 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -28,11 +33,9 @@ public class Subject{
     @Column(name = "status")
     private Boolean status;
 
-    @OneToMany(
-            mappedBy = "subject", cascade = CascadeType.ALL, fetch = FetchType.EAGER
-    )
-    @Autowired
-    private List<Score> reports = new ArrayList<>();
-
-
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "sutdent_subject",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "subject_id"))
+    private Set<User> userSet = new HashSet<>();
 }

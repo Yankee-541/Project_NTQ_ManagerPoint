@@ -1,18 +1,24 @@
 package com.example.managerstudentpoint.service.Impl;
 
 
+import com.example.managerstudentpoint.Excel.ExcelHelper;
 import com.example.managerstudentpoint.entity.BaseExportExcelModel;
 import com.example.managerstudentpoint.entity.MetadataExcelModel;
-import com.example.managerstudentpoint.service.ExportExcelFileService;
+import com.example.managerstudentpoint.entity.User;
+import com.example.managerstudentpoint.repository.UserRepository;
+import com.example.managerstudentpoint.service.ExcelFileService;
 import org.apache.poi.ooxml.POIXMLDocument;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -25,7 +31,14 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
-public class ExportXLSXFileServiceImpl implements ExportExcelFileService {
+public class XLSXFileServiceImpl implements ExcelFileService {
+    @Autowired
+    UserRepository studentRepository;
+
+    public List<User> getAllTutorials() {
+        return studentRepository.findAll();
+    }
+
     @Override
     public File exportFile(String fileName,
                            String sheetName,
@@ -33,7 +46,7 @@ public class ExportXLSXFileServiceImpl implements ExportExcelFileService {
                            Class<? extends BaseExportExcelModel> classType) {
         File excelFile = null;
         try {
-            Path pathExcelFile = Files.createTempFile(Paths.get("C:\\"),fileName,".xlsx");
+            Path pathExcelFile = Files.createTempFile(Paths.get("F:\\Documents\\"), fileName, ".xlsx");
             excelFile = pathExcelFile.toFile();
 
             POIXMLDocument workbook = exportExcel(dataExport, classType, sheetName);
@@ -48,6 +61,16 @@ public class ExportXLSXFileServiceImpl implements ExportExcelFileService {
             }
         }
         return null;
+    }
+
+    @Override
+    public void save(MultipartFile file) {
+        try {
+            List<User> tutorials = ExcelHelper.excelToTutorials(file.getInputStream());
+            studentRepository.saveAll(tutorials);
+        } catch (IOException e) {
+            throw new RuntimeException("fail to store excel data: " + e.getMessage());
+        }
     }
 
     public <T> POIXMLDocument exportExcel(List<BaseExportExcelModel> listData,

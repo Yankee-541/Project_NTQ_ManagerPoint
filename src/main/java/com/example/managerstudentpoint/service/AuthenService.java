@@ -4,7 +4,6 @@ import com.example.managerstudentpoint.dto.JwtResponse;
 import com.example.managerstudentpoint.dto.LoginRequestDTO;
 import com.example.managerstudentpoint.dto.UserDTO;
 import com.example.managerstudentpoint.response.Response;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -19,7 +18,7 @@ public interface AuthenService {
 
     ResponseEntity<Response> addAccStudent(UserDTO userDTO) throws NoSuchAlgorithmException;
 
-    HttpStatus deleteStudent(Long[] id);
+    ResponseEntity<String> deleteStudent(Long[] id);
 
     ResponseEntity<Response> updateStudent(UserDTO studentDTO) throws NoSuchAlgorithmException;
 

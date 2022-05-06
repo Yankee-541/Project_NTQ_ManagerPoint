@@ -3,7 +3,10 @@ package com.example.managerstudentpoint.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -24,10 +27,13 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "user")
+//@SQLDelete(sql="UPDATE user set isDelete = true where id = ?")
+
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,7 +58,15 @@ public class User {
     private String address;
 
     @Column
-    private String status;
+    private Boolean isDelete = Boolean.FALSE;
+
+    public Boolean getDelete() {
+        return isDelete;
+    }
+
+    public void setDelete(Boolean delete) {
+        isDelete = delete;
+    }
 
     @Column
     private String email;
@@ -66,7 +80,7 @@ public class User {
                 String rollNumber,
                 String gender,
                 String address,
-                String status,
+                Boolean isDelete,
                 String email,
                 String phoneNumber) {
         this.username = username;
@@ -75,7 +89,7 @@ public class User {
         this.rollNumber = rollNumber;
         this.gender = gender;
         this.address = address;
-        this.status = status;
+        this.isDelete = isDelete;
         this.email = email;
         this.phoneNumber = phoneNumber;
     }
@@ -87,7 +101,7 @@ public class User {
                 String rollNumber,
                 String gender,
                 String address,
-                String status,
+                Boolean isDelete,
                 String email,
                 String phoneNumber) {
         this.id = id;
@@ -97,7 +111,7 @@ public class User {
         this.rollNumber = rollNumber;
         this.gender = gender;
         this.address = address;
-        this.status = status;
+        this.isDelete = isDelete;
         this.email = email;
         this.phoneNumber = phoneNumber;
     }
@@ -118,4 +132,9 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roleList = new HashSet<>();
 
+//    @ManyToMany(fetch = FetchType.LAZY)
+//    @JoinTable(name = "sutdent_subject",
+//            joinColumns = @JoinColumn(name = "user_id"),
+//            inverseJoinColumns = @JoinColumn(name = "subject_id"))
+//    private Set<Subject> subjectList = new HashSet<>();
 }

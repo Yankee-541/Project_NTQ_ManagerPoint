@@ -20,7 +20,7 @@ public class UserDTO extends BaseAbstractDTO<UserDTO> {
     private String password;
     @NotBlank(message = "Fullname is mandatory")
     private String fullName;
-    private String status;
+    private Boolean isDelete;
     @NotBlank(message = "Phone number is mandatory")
     private String phoneNumber;
     @NotBlank(message = "Email is mandatory")
@@ -30,4 +30,5 @@ public class UserDTO extends BaseAbstractDTO<UserDTO> {
     private String rollNumber;
     private GroupClass groupClass;
     private Set<String> role;
+    private Set<String> subject;
 }

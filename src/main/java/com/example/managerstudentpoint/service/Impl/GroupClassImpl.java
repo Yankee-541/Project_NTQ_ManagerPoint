@@ -4,7 +4,7 @@ import com.example.managerstudentpoint.dto.GroupClassDTO;
 import com.example.managerstudentpoint.entity.GroupClass;
 import com.example.managerstudentpoint.entity.User;
 import com.example.managerstudentpoint.repository.GroupClassRepository;
-import com.example.managerstudentpoint.repository.StudentRepository;
+import com.example.managerstudentpoint.repository.UserRepository;
 import com.example.managerstudentpoint.response.Response;
 import com.example.managerstudentpoint.service.GroupClassService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,7 +22,7 @@ import java.util.List;
 public class GroupClassImpl implements GroupClassService {
     private final ObjectMapper OBJECT_MAPPER;
     private final GroupClassRepository GROUPCLASS_REPO;
-    private final StudentRepository USER_REPOSITORY;
+    private final UserRepository USER_REPOSITORY;
 
     @Override
     public ResponseEntity<Response> classById(Long id) {

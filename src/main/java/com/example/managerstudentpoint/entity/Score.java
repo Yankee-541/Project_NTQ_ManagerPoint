@@ -25,11 +25,11 @@ public class Score {
     private Double point;
 
     @ManyToOne
-    @JoinColumn(name = "subject_id")
-    @Autowired
+    @JoinColumn(name = "subject_id", referencedColumnName = "id")
+
     private Subject subject;
 
-    @ManyToOne(cascade = {CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH,CascadeType.DETACH})
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable=false)
     private User users;
 }

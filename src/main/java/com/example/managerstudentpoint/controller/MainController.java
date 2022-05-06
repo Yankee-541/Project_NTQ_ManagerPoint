@@ -5,15 +5,13 @@ import com.example.managerstudentpoint.dto.LoginRequestDTO;
 import com.example.managerstudentpoint.dto.StudentExportExcelDTO;
 import com.example.managerstudentpoint.dto.UserDTO;
 import com.example.managerstudentpoint.entity.BaseExportExcelModel;
-import com.example.managerstudentpoint.entity.User;
 import com.example.managerstudentpoint.repository.RoleRepository;
-import com.example.managerstudentpoint.repository.StudentRepository;
+import com.example.managerstudentpoint.repository.UserRepository;
 import com.example.managerstudentpoint.response.Response;
 import com.example.managerstudentpoint.service.AuthenService;
-import com.example.managerstudentpoint.service.Impl.ExportXLSXFileServiceImpl;
+import com.example.managerstudentpoint.service.Impl.XLSXFileServiceImpl;
 import com.example.managerstudentpoint.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +28,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -61,36 +58,13 @@ public class MainController {
     AuthenService AUTHEN_SERVICE;
 
     @Autowired
-    ExportXLSXFileServiceImpl exportExcelFileService;
+    XLSXFileServiceImpl exportExcelFileService;
 
     @Autowired
-    StudentRepository studentRepository;
+    UserRepository studentRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
-
-    @GetMapping("")
-    public Page<User> getUser(
-            @RequestParam(name = "name", defaultValue = "") String fullName,
-            @RequestParam(name = "rollNumber", defaultValue = "") String rollNumber,
-            @RequestParam(name = "gender", defaultValue = "") String gender,
-            @RequestParam(name = "address", defaultValue = "") String address,
-            @RequestParam(name = "status", defaultValue = "") String status,
-            @RequestParam(name = "email", defaultValue = "") String email,
-            @RequestParam(name = "phoneNumber", defaultValue = "") String phoneNumber,
-            @RequestParam(name = "size", defaultValue = "3") Integer size,
-            @RequestParam(name = "page", defaultValue = "1") Integer page) {
-        return USER_SERVICE.getUser(
-                fullName,
-                rollNumber,
-                gender,
-                address,
-                status,
-                email,
-                phoneNumber,
-                size,
-                page);
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Response> detail(@PathVariable Long id) {
@@ -99,7 +73,7 @@ public class MainController {
 
     @DeleteMapping()
     @PreAuthorize("hasRole('ADMIN')")
-    public HttpStatus deleteStudent(@RequestBody Long[] ids) {
+    public ResponseEntity<String> deleteStudent(@RequestBody Long[] ids) {
         return AUTHEN_SERVICE.deleteStudent(ids);
     }
 

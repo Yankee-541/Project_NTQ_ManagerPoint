@@ -9,4 +9,7 @@ public class Response {
     private String message;
     private Object object;
 
+    public Response(String message) {
+        this.message = message;
+    }
 }
