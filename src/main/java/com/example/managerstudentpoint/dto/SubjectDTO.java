@@ -1,5 +1,6 @@
 package com.example.managerstudentpoint.dto;
 
+import com.example.managerstudentpoint.entity.User;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -14,4 +15,5 @@ public class SubjectDTO {
     private String nameSubject;
     private Boolean status;
 
+    private User user;
 }

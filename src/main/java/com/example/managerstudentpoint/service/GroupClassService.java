@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 public interface GroupClassService {
     ResponseEntity<Response> classById(Long id);
     ResponseEntity<Response> addClass(GroupClassDTO groupClassDTO);
-    HttpStatus deleteClass(Long[] id);
+    ResponseEntity<String> deleteClass(Long[] id);
 
 
 }

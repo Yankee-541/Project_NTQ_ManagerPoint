@@ -35,11 +35,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
+
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception{
         return super.authenticationManagerBean();
     }
+
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
@@ -57,9 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/student/**")
                 .permitAll() // Cho phép tất cả mọi người truy cập vào địa chỉ này
-                .antMatchers("/api/test/**").permitAll()
                 .anyRequest().authenticated(); // Tất cả các request khác đều cần phải xác thực mới được truy cập
-
         // Thêm một lớp Filter kiểm tra jwt
         http.addFilterBefore(authJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }

@@ -46,10 +46,10 @@ public class MainController {
     JwtUtils jwtUtils;
 
     @Autowired
-    StudentService USER_SERVICE;
+    StudentService userService;
 
     @Autowired
-    AuthenService AUTHEN_SERVICE;
+    AuthenService authenService;
 
     @Autowired
     UserRepository studentRepository;
@@ -62,31 +62,7 @@ public class MainController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Response> detail(@PathVariable Long id) {
-        return USER_SERVICE.details(id);
-    }
-
-    @DeleteMapping()
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> deleteStudent(@RequestBody Long[] ids) {
-        return AUTHEN_SERVICE.deleteStudent(ids);
-    }
-
-    @PutMapping("/signin")
-    public ResponseEntity<?> signin(@Validated @RequestBody LoginRequestDTO loginRequest) throws NoSuchAlgorithmException {
-        return AUTHEN_SERVICE.login(loginRequest);
-
-    }
-
-    @PostMapping("/signup")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> registerUser(@Validated @RequestBody UserDTO signUpRequest) throws NoSuchAlgorithmException {
-        return AUTHEN_SERVICE.signup(signUpRequest);
-    }
-
-    @PutMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateStudent(@Validated @RequestBody UserDTO updateStudent) throws NoSuchAlgorithmException {
-        return AUTHEN_SERVICE.updateStudent(updateStudent);
+        return userService.details(id);
     }
 
 

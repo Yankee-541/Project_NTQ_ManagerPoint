@@ -14,16 +14,16 @@ import java.util.Set;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDTO extends BaseAbstractDTO<UserDTO> {
     private Long id;
-//    @NotBlank(message = "Username is mandatory")
+    @NotBlank(message = "Username is mandatory")
     private String username;
-//    @NotBlank(message = "Password is mandatory")
+    @NotBlank(message = "Password is mandatory")
     private String password;
-//    @NotBlank(message = "Fullname is mandatory")
+    @NotBlank(message = "Fullname is mandatory")
     private String fullName;
     private Boolean isDelete;
-//    @NotBlank(message = "Phone number is mandatory")
+    @NotBlank(message = "Phone number is mandatory")
     private String phoneNumber;
-//    @NotBlank(message = "Email is mandatory")
+    @NotBlank(message = "Email is mandatory")
     private String email;
     private String gender;
     private String address;

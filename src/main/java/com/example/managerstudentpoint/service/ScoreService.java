@@ -2,7 +2,6 @@ package com.example.managerstudentpoint.service;
 
 import com.example.managerstudentpoint.dto.ScoreDTO;
 import com.example.managerstudentpoint.dto.StudentExportExcelDTO;
-import com.example.managerstudentpoint.dto.SubjectDTO;
 import com.example.managerstudentpoint.response.Response;
 import org.springframework.http.ResponseEntity;
 

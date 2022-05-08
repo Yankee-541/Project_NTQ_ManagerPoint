@@ -33,7 +33,7 @@ public class GroupClassController {
 
     @DeleteMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public HttpStatus deleteStudent(@RequestBody Long[] ids) {
+    public ResponseEntity<String> deleteClass(@RequestBody Long[] ids) {
         return groupClassService.deleteClass(ids);
     }
 }

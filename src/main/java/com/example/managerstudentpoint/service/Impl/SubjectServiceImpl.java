@@ -26,11 +26,11 @@ public class SubjectServiceImpl implements SubjectService {
     private final ObjectMapper objectMapper;
 
     @Override
-    public ResponseEntity<Response> getStudentsBySubject(String key, Integer page, Integer pageSize) {
-        List<Subject> subjectList = subjectRepository.getSubjectByNameSubject(true,key,PageRequest.of(page-1, pageSize)).getContent();
+    public ResponseEntity<Response> getSubject(String key, Integer page, Integer pageSize) {
+        List<Subject> subjectList = subjectRepository.getSubjectByNameSubject(false,key,PageRequest.of(page-1, pageSize)).getContent();
         if (subjectList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new Response("Don't have students","")
+                    new Response("Don't have subject","")
             );
         } else {
             List<SubjectDTO> subjectDTOS = new ArrayList<>();
@@ -41,6 +41,21 @@ public class SubjectServiceImpl implements SubjectService {
                     new Response("ok",subjectDTOS)
             );
         }
+    }
+
+    @Override
+    public ResponseEntity<String> deleteSubject(Long[] ids) {
+        for (Long id : ids){
+            Subject subject = subjectRepository.findById(id).orElse(null);
+            if (subject == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found with id");
+            }
+            subject.setStatus(true);
+            subjectRepository.save(subject);
+        }
+        return ResponseEntity.status(HttpStatus.OK).body("Delete success");
+
+
     }
 
 

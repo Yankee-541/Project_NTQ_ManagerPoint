@@ -41,14 +41,14 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AuthenServiceImpl implements AuthenService, UserDetailsService {
 
-    UserRepository userRepository;
-    ObjectMapper objectmapper;
-    AuthenticationManager authenticationMana;
-    JwtUtils jwtUtils;
-    PasswordEncoder passwordEncoder;
-    RoleRepository roleRepository;
-    StudentService studentService;
-    GroupClassRepository groupClassRepository;
+    private final UserRepository userRepository;
+    private final ObjectMapper objectmapper;
+    private final AuthenticationManager authenticationMana;
+    private final JwtUtils jwtUtils;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
+    private final StudentService studentService;
+    private final GroupClassRepository groupClassRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -143,6 +143,20 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
         }
     }
 
+    @Override
+    public boolean login_1(LoginRequestDTO loginRequest) {
+        if (userRepository.existsByUsername(loginRequest.getUsername())) {
+            Authentication authentication = authenticationMana.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            String jwt = jwtUtils.generateJwtToken(authentication);
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            return true;
+        }
+        return false;
+
+    }
 
     @Override
     public UserDetails loadUserById(Long userId) {
@@ -173,16 +187,16 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
     }
 
     @Override
-    public ResponseEntity<String> deleteStudent(Long[] ids) {
+    public ResponseEntity<Response> deleteStudent(Long[] ids) {
         for (long id : ids) {
             User user = userRepository.findById(id).orElse(null);
             if (user == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found account with username ");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response("Not found account with id "));
             }
             user.setIsDelete(true);
             userRepository.save(user);
         }
-        return ResponseEntity.ok("Delete successful!");
+        return ResponseEntity.status(HttpStatus.OK).body(new Response("Delete successful!"));
     }
 
 
@@ -229,6 +243,23 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
         user.setRoleList(roles);
         userRepository.save(user);
         return ResponseEntity.ok(new Response("", user));
+    }
+
+    @Override
+    public ResponseEntity<Response> changePassword(LoginRequestDTO loginRequestDTO, String newPass) throws NoSuchAlgorithmException {
+        if (!login_1(loginRequestDTO)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new Response("Username or password is invalid!")
+            );
+        }else{
+            User account = new User();
+            account.setUsername(loginRequestDTO.getUsername());
+            account.setPassword(passwordEncoder.encode(newPass));
+            userRepository.save(account);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new Response("Change password successful!", null)
+            );
+        }
     }
 
     private String generateRollNumber() {
