@@ -15,6 +15,10 @@ public interface ExcelFileService {
 
     File exportFile(String fileName, String sheetName, List<BaseExportExcelModel> dataExport, Class<? extends BaseExportExcelModel> classType);
 
+    File exportScoreByRollnumber(String fileName, String sheetName, List<BaseExportExcelModel> dataExport, Class<? extends BaseExportExcelModel> classType);
+
     ResponseEntity<String> importStudents(MultipartFile file);
+
+
 
 }

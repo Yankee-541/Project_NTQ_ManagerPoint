@@ -20,8 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class GroupClassController {
     private final GroupClassService groupClassService;
+
     @GetMapping("/{id}")
-    public ResponseEntity<Response> detail(@PathVariable Long id) {
+    public ResponseEntity<Response> getStudentByClassId(@PathVariable Long id) {
         return groupClassService.classById(id);
     }
 
@@ -36,4 +37,5 @@ public class GroupClassController {
     public ResponseEntity<String> deleteClass(@RequestBody Long[] ids) {
         return groupClassService.deleteClass(ids);
     }
+
 }

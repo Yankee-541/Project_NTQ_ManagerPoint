@@ -79,11 +79,10 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
                 generateRollNumber(),
                 signUpRequest.getGender(),
                 signUpRequest.getAddress(),
-                signUpRequest.getIsDelete(),
                 signUpRequest.getEmail(),
                 signUpRequest.getPhoneNumber()
         );
-
+        user.setIsDelete(false);
         GroupClass groupclass = objectmapper.convertValue(signUpRequest.getGroupClass(), GroupClass.class);
         if (groupClassRepository.existsById(signUpRequest.getGroupClass().getId())) {
             user.setGroupClass(groupclass);
@@ -198,7 +197,6 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
         return ResponseEntity.status(HttpStatus.OK).body(new Response("Delete successful!"));
     }
 
-
     @Override
     public ResponseEntity<Response> updateStudent(@NotNull UserDTO studentDTO) {
         User user = new User(
@@ -289,7 +287,6 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
                 });
             }
             user.setRoleList(roles);
-
             userRepository.save(user);
             return ResponseEntity.status(HttpStatus.OK).body(
                     new Response("Change password successful!", null)

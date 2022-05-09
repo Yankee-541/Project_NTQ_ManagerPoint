@@ -12,4 +12,8 @@ public class Response {
     public Response(String message) {
         this.message = message;
     }
+
+    public Response(Object object) {
+        this.object = object;
+    }
 }

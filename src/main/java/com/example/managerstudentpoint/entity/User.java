@@ -80,7 +80,7 @@ public class User {
                 String rollNumber,
                 String gender,
                 String address,
-                Boolean isDelete,
+//                Boolean isDelete,
                 String email,
                 String phoneNumber) {
         this.username = username;
@@ -89,7 +89,7 @@ public class User {
         this.rollNumber = rollNumber;
         this.gender = gender;
         this.address = address;
-        this.isDelete = isDelete;
+//        this.isDelete = isDelete;
         this.email = email;
         this.phoneNumber = phoneNumber;
     }
@@ -132,7 +132,17 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roleList = new HashSet<>();
 
-//    @ManyToMany(fetch = FetchType.LAZY)
+    @Override
+    public String toString() {
+        return
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", rollNumber='" + rollNumber + '\'' +
+                ", email='" + email + '\'';
+    }
+
+    //    @ManyToMany(fetch = FetchType.LAZY)
 //    @JoinTable(name = "sutdent_subject",
 //            joinColumns = @JoinColumn(name = "user_id"),
 //            inverseJoinColumns = @JoinColumn(name = "subject_id"))

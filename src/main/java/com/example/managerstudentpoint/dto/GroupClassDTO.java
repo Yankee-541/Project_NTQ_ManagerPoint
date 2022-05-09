@@ -13,4 +13,5 @@ public class GroupClassDTO {
     private String className;
     private Boolean status;
     private List<User> userList;
+
 }

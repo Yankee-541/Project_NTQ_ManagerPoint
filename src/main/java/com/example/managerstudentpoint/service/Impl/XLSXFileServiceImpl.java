@@ -85,6 +85,27 @@ public class XLSXFileServiceImpl implements ExcelFileService {
     }
 
     @Override
+    public File exportScoreByRollnumber(String fileName, String sheetName, List<BaseExportExcelModel> dataExport, Class<? extends BaseExportExcelModel> classType) {
+        File excelFile = null;
+        try {
+            Path pathExcelFile = Files.createTempFile(Paths.get("F:\\Documents\\"), fileName, ".xlsx");
+            excelFile = pathExcelFile.toFile();
+
+            POIXMLDocument workbook = exportScoreByRollnumber(dataExport, classType, sheetName);
+
+            FileOutputStream outputStream = new FileOutputStream(excelFile);
+            workbook.write(outputStream);
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (excelFile != null && excelFile.exists()) {
+            }
+        }
+        return null;
+    }
+
+    @Override
     public ResponseEntity<String> importStudents(MultipartFile file) {
         try {
             List<UserDTO> getData = ExcelHelper.readStudentExcelFile(file.getInputStream());
@@ -115,6 +136,61 @@ public class XLSXFileServiceImpl implements ExcelFileService {
             BaseExportExcelModel object = ctor.newInstance();
             List<String> headers = object.getHeaders();
             List<MetadataExcelModel> listMetadata = object.getListMetadata();
+            Sheet sheet = workbook.createSheet(sheetName);
+            Row headerRow = sheet.createRow(0);
+            for (int col = 0; col < headers.size(); col++) {
+                Cell cell = headerRow.createCell(col);
+                cell.setCellValue(headers.get(col));
+            }
+            AtomicInteger rowIdx = new AtomicInteger(1);
+            listData.forEach(item -> {
+                int index = rowIdx.getAndIncrement();
+                Row row = sheet.createRow(index);
+                row.createCell(0).setCellValue(index);
+                for (MetadataExcelModel info : listMetadata) {
+                    try {
+                        String fieldName = info.getFieldName();
+                        Method methodGet = classType.getDeclaredMethod(
+                                "get" + (fieldName.charAt(0) + "").toUpperCase() + fieldName.substring(1)
+                        );
+                        Object valueObject = methodGet.invoke(item);
+                        String value = "";
+                        if (valueObject != null) {
+                            // TODO: Need modify when has other type need convert
+                            switch (info.getParameterType().getName()) {
+                                case "java.time.LocalDate":
+                                    value = DATE_FORMATTER.format(((LocalDate) valueObject));
+                                    break;
+                                case "java.time.LocalDateTime":
+                                    value = DATE_TIME_FORMATTER.format(((LocalDateTime) valueObject));
+                                    break;
+                                case "java.lang.String":
+                                default:
+                                    value = valueObject.toString();
+                            }
+                        }
+                        row.createCell(info.getPosition()).setCellValue(value);
+                    } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+            return workbook;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return workbook;
+    }
+
+    public <T> POIXMLDocument exportScoreByRollnumber(List<BaseExportExcelModel> listData,
+                                          Class<? extends BaseExportExcelModel> classType,
+                                          String sheetName) {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+        try {
+            Constructor<? extends BaseExportExcelModel> ctor = classType.getConstructor();
+            BaseExportExcelModel object = ctor.newInstance();
+            List<String> headers = object.getHeaderForScoreByRollnumber();
+            List<MetadataExcelModel> listMetadata = object.getListMetadataExcelModels();
             Sheet sheet = workbook.createSheet(sheetName);
             Row headerRow = sheet.createRow(0);
             for (int col = 0; col < headers.size(); col++) {

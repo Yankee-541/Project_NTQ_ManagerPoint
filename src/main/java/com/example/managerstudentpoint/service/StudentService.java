@@ -8,8 +8,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.List;
 
 public interface StudentService {
+
     ResponseEntity<Response> details(Long id);
+
     ResponseEntity<Response> getAllStudents(String key, Integer page, Integer pageSize);
+
     UserDetails loadUserById(Long userId);
+
     List<StudentExportExcelDTO> listAll();
+
+    List<StudentExportExcelDTO> getScoreByRollnumber(String rollnumber);
+
 }

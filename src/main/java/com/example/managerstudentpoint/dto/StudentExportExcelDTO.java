@@ -3,12 +3,10 @@ package com.example.managerstudentpoint.dto;
 import com.example.managerstudentpoint.entity.BaseExportExcelModel;
 import com.example.managerstudentpoint.entity.GroupClass;
 import com.example.managerstudentpoint.entity.MetadataExcelModel;
-import com.example.managerstudentpoint.entity.Score;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,6 +32,17 @@ public class StudentExportExcelDTO extends BaseExportExcelModel {
                 ,new MetadataExcelModel(4, "groupClassDTO", GroupClass.class, "Class")
                 ,new MetadataExcelModel(5, "scoreDTO", ScoreDTO.class, "Score")
                 ,new MetadataExcelModel(6, "subjectDTO", SubjectDTO.class, "Subject")
+        );
+    }
+
+    @Override
+    public List<MetadataExcelModel> getListMetadataExcelModels() {
+        return Arrays.asList(
+                new MetadataExcelModel(1, "rollNumber", String.class, "Roll number")
+                ,new MetadataExcelModel(2, "fullName", String.class, "Full name")
+                ,new MetadataExcelModel(3, "email", String.class, "Email")
+                ,new MetadataExcelModel(4, "subjectDTO", SubjectDTO.class, "Subject")
+                ,new MetadataExcelModel(5, "scoreDTO", ScoreDTO.class, "Score")
         );
     }
 }

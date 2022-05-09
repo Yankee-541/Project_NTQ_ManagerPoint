@@ -18,5 +18,17 @@ public abstract class BaseExportExcelModel {
         return headers;
     }
 
+    public List<String> getHeaderForScoreByRollnumber(){
+        List<String> headers = new ArrayList<>();
+        headers.add("#");
+        List<MetadataExcelModel> listMetadata = getListMetadataExcelModels();
+        for (MetadataExcelModel metadataExcelModel : listMetadata) {
+            headers.add(metadataExcelModel.getHeader());
+        }
+        return headers;
+    }
+
     public abstract List<MetadataExcelModel> getListMetadata();
+
+    public abstract List<MetadataExcelModel> getListMetadataExcelModels();
 }

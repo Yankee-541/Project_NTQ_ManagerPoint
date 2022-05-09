@@ -29,18 +29,15 @@ public class GroupClassServiceImpl implements GroupClassService {
         GroupClassDTO groupClassDTO = objectMapper.convertValue(classRepository.findById(id).orElse(null), GroupClassDTO.class);
         if (groupClassDTO == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new Response("Don't have class with id: " + id, "")
+                    new Response("Don't have class with id: " + id)
             );
         } else {
             List<User> userList = userRepository.findAllByGroupClass(new GroupClass(id, null));
             if (!userList.isEmpty()) {
                 groupClassDTO.setUserList(userList);
-                return ResponseEntity.status(HttpStatus.OK).body(
-                        new Response("Found class have class_id: " + id, groupClassDTO)
-                );
             }
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new Response("Found class have class_id: " + id, groupClassDTO)
+                    new Response(groupClassDTO)
             );
 
         }
