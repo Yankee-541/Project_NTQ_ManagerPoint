@@ -47,7 +47,6 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
-    private final StudentService studentService;
     private final GroupClassRepository groupClassRepository;
 
     @Override
@@ -85,7 +84,7 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
                 signUpRequest.getPhoneNumber()
         );
 
-        GroupClass groupclass = signUpRequest.getGroupClass();
+        GroupClass groupclass = objectmapper.convertValue(signUpRequest.getGroupClass(), GroupClass.class);
         if (groupClassRepository.existsById(signUpRequest.getGroupClass().getId())) {
             user.setGroupClass(groupclass);
         }
@@ -139,12 +138,12 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
                     roles
             ));
         } else {
-            return ResponseEntity.status(HttpStatus.OK).body(new JwtResponse("Username is wrong or invalid"));
+            return ResponseEntity.status(HttpStatus.OK).body(new JwtResponse("Username or password is wrong or invalid"));
         }
     }
 
     @Override
-    public boolean login_1(LoginRequestDTO loginRequest) {
+    public boolean login_1(UserDTO loginRequest) {
         if (userRepository.existsByUsername(loginRequest.getUsername())) {
             Authentication authentication = authenticationMana.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
@@ -191,7 +190,7 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
         for (long id : ids) {
             User user = userRepository.findById(id).orElse(null);
             if (user == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response("Not found account with id "));
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response("Not found user with id "));
             }
             user.setIsDelete(true);
             userRepository.save(user);
@@ -246,23 +245,63 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
     }
 
     @Override
-    public ResponseEntity<Response> changePassword(LoginRequestDTO loginRequestDTO, String newPass) throws NoSuchAlgorithmException {
-        if (!login_1(loginRequestDTO)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new Response("Username or password is invalid!")
-            );
-        }else{
-            User account = new User();
-            account.setUsername(loginRequestDTO.getUsername());
-            account.setPassword(passwordEncoder.encode(newPass));
-            userRepository.save(account);
+    public ResponseEntity<Response> changePassword(UserDTO userDTO, String newPass) throws NoSuchAlgorithmException {
+        if (login_1(userDTO)) {
+            User user = objectmapper.convertValue(userRepository.findById(userDTO.getId()).orElse(null),
+                    User.class);
+            user.setId(userDTO.getId());
+            user.setUsername(user.getUsername());
+            user.setEmail(user.getEmail());
+            user.setGender(user.getGender());
+            user.setRollNumber(user.getRollNumber());
+            user.setAddress(user.getAddress());
+            user.setFullName(user.getFullName());
+            user.setPhoneNumber(user.getPhoneNumber());
+            user.setPassword(passwordEncoder.encode(newPass));
+
+            GroupClass groupclass = objectmapper.convertValue(user.getGroupClass(), GroupClass.class);
+            user.setGroupClass(groupclass);
+
+            Set<String> strRoles = userDTO.getRole();
+            Set<Role> roles = new HashSet<>();
+            if (strRoles == null) {
+                Role userRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                roles.add(userRole);
+            } else {
+                strRoles.forEach(role -> {
+                    switch (role) {
+                        case "admin":
+                            Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            roles.add(adminRole);
+                            break;
+                        case "mod":
+                            Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            roles.add(modRole);
+                            break;
+                        default:
+                            Role userRole = roleRepository.findByName(ERole.ROLE_STUDENT)
+                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            roles.add(userRole);
+                    }
+                });
+            }
+            user.setRoleList(roles);
+
+            userRepository.save(user);
             return ResponseEntity.status(HttpStatus.OK).body(
                     new Response("Change password successful!", null)
+            );
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    new Response("Username or password is invalid!")
             );
         }
     }
 
-    private String generateRollNumber() {
+    public String generateRollNumber() {
         String lastRoll = userRepository.getLastRollNumber().substring(2);
         int roll = Integer.parseInt(lastRoll.toString()) + 1;
         String pre = "HE";

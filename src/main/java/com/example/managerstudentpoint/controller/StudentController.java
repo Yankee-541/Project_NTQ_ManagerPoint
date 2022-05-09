@@ -62,16 +62,16 @@ public class StudentController {
 
     @PutMapping("/login")
     public ResponseEntity<?> login(@Validated @RequestBody LoginRequestDTO loginRequest) throws NoSuchAlgorithmException {
-        if (authenService.login_1(loginRequest)) {
-            return ResponseEntity.status(HttpStatus.OK).body(
-                    new Response("Login successful!",
-                            new JwtResponse(jwtToken.generateToken(loginRequest.getUsername())))
-            );
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                new Response("Username or password is invalid!")
-        );
-//        return authenService.login(loginRequest);
+//        if (authenService.login_1(loginRequest)) {
+//            return ResponseEntity.status(HttpStatus.OK).body(
+//                    new Response("Login successful!",
+//                            new JwtResponse(jwtToken.generateToken(loginRequest.getUsername())))
+//            );
+//        }
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+//                new Response("Username or password is invalid!")
+//        );
+        return authenService.login(loginRequest);
     }
 
     @DeleteMapping()

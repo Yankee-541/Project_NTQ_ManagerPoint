@@ -38,4 +38,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "select rollnumber from mangerstudentpoint.user order by rollnumber desc LIMIT 1;", nativeQuery = true)
     String getLastRollNumber();
 
+    User findUserByRollNumber(String rollnNumber);
+
 }

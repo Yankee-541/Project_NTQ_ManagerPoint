@@ -126,7 +126,7 @@ public class User {
     @JoinColumn(name = "class_id", nullable = true)
     private GroupClass groupClass;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))

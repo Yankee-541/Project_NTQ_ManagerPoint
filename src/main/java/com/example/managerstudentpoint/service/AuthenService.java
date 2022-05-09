@@ -16,7 +16,7 @@ public interface AuthenService {
 
     UserDetails loadUserById(Long userId);
 
-    boolean login_1(LoginRequestDTO account);
+    boolean login_1(UserDTO account);
 
     ResponseEntity<Response> addAccStudent(UserDTO userDTO) throws NoSuchAlgorithmException;
 
@@ -24,6 +24,6 @@ public interface AuthenService {
 
     ResponseEntity<Response> updateStudent(UserDTO studentDTO) throws NoSuchAlgorithmException;
 
-    ResponseEntity<Response> changePassword(LoginRequestDTO loginRequestDTO, String newPass) throws NoSuchAlgorithmException;
+    ResponseEntity<Response> changePassword(UserDTO loginRequestDTO, String newPass) throws NoSuchAlgorithmException;
 
 }

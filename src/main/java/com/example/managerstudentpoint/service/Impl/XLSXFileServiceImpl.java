@@ -2,17 +2,26 @@ package com.example.managerstudentpoint.service.Impl;
 
 
 import com.example.managerstudentpoint.Excel.ExcelHelper;
+import com.example.managerstudentpoint.dto.UserDTO;
 import com.example.managerstudentpoint.entity.BaseExportExcelModel;
+import com.example.managerstudentpoint.entity.GroupClass;
 import com.example.managerstudentpoint.entity.MetadataExcelModel;
 import com.example.managerstudentpoint.entity.User;
+import com.example.managerstudentpoint.repository.GroupClassRepository;
+import com.example.managerstudentpoint.repository.ScoreRepository;
+import com.example.managerstudentpoint.repository.SubjectRepository;
 import com.example.managerstudentpoint.repository.UserRepository;
 import com.example.managerstudentpoint.service.ExcelFileService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.poi.ooxml.POIXMLDocument;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,10 +42,22 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 public class XLSXFileServiceImpl implements ExcelFileService {
     @Autowired
-    UserRepository studentRepository;
+    private UserRepository userRepository;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private GroupClassRepository classRepository;
+
+    @Autowired
+    AuthenServiceImpl authenService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public List<User> getAllTutorials() {
-        return studentRepository.findAll();
+        return userRepository.findAll();
     }
 
     @Override
@@ -64,13 +85,25 @@ public class XLSXFileServiceImpl implements ExcelFileService {
     }
 
     @Override
-    public void save(MultipartFile file) {
+    public ResponseEntity<String> importStudents(MultipartFile file) {
         try {
-            List<User> tutorials = ExcelHelper.excelToTutorials(file.getInputStream());
-            studentRepository.saveAll(tutorials);
+            List<UserDTO> getData = ExcelHelper.readStudentExcelFile(file.getInputStream());
+            if (!getData.isEmpty()) {
+                for (UserDTO userDTO : getData) {
+                    User user = objectMapper.convertValue(userDTO, User.class);
+                    user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+                    user.setRollNumber(authenService.generateRollNumber());
+                    GroupClass clazz = classRepository.findByClassName(userDTO.getGroupClass().getClassName());
+                    user.setGroupClass(clazz);
+                    userRepository.save(user);
+                }
+                return ResponseEntity.status(200).body("Import Successful!");
+            }
         } catch (IOException e) {
-            throw new RuntimeException("fail to store excel data: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error! Please try again.");
         }
+        return ResponseEntity.status(404).body("File is empty! Check again.");
     }
 
     public <T> POIXMLDocument exportExcel(List<BaseExportExcelModel> listData,

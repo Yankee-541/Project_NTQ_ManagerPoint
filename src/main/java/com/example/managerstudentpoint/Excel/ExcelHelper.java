@@ -1,6 +1,8 @@
 package com.example.managerstudentpoint.Excel;
 
-import com.example.managerstudentpoint.entity.User;
+import com.example.managerstudentpoint.dto.GroupClassDTO;
+import com.example.managerstudentpoint.dto.UserDTO;
+import com.example.managerstudentpoint.service.Impl.AuthenServiceImpl;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -16,9 +18,10 @@ import java.util.List;
 
 public class ExcelHelper {
     public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-    static String[] HEADERs = {"#","Id", "Roll number", "Full name", "User name", "Phone number", "Gender","Address", "Email"};
-    static String SHEET = "Tutorials";
+    static String[] HEADERs = {"User name", "Password", "Full name", "Phone number", "Email", "Gender", "Address", "GroupClass"};
+    static String SHEET = "Student";
 
+    AuthenServiceImpl authenService;
 
     public static boolean hasExcelFormat(MultipartFile file) {
         if (!TYPE.equals(file.getContentType())) {
@@ -27,68 +30,64 @@ public class ExcelHelper {
         return true;
     }
 
-    public static List<User> excelToTutorials(InputStream is) {
+    public static List<UserDTO> readStudentExcelFile(InputStream is) {
+        List<UserDTO> userDTOlist = new ArrayList<>();
         try {
             Workbook workbook = new XSSFWorkbook(is);
-            Sheet sheet = workbook.getSheet(SHEET);
-            Iterator<Row> rows = sheet.iterator();
-            List<User> tutorials = new ArrayList<User>();
-            int rowNumber = 0;
-            while (rows.hasNext()) {
-                Row currentRow = rows.next();
-                // skip header
-                if (rowNumber == 0) {
-                    rowNumber++;
-                    continue;
-                }
-                Iterator<Cell> cellsInRow = currentRow.iterator();
-                User user = new User();
-                int cellIdx = 0;
-                while (cellsInRow.hasNext()) {
-                    Cell currentCell = cellsInRow.next();
-                    switch (cellIdx) {
-//                        case 0:
-//                            String id = String.valueOf(currentCell.getNumericCellValue());
-//                            if (id != null) {
-//                            user.setId((long) currentCell.getNumericCellValue());
-
-//                            }
-//                            break;
-                        case 1:
-                            user.setId((long) currentCell.getNumericCellValue());
-                            break;
-                        case 2:
-                            user.setRollNumber(currentCell.getStringCellValue());
-                            break;
-                        case 3:
-                            user.setFullName(currentCell.getStringCellValue());
-                            break;
-                        case 4:
-                            user.setUsername(currentCell.getStringCellValue());
-                            break;
-                        case 5:
-                            user.setPhoneNumber(currentCell.getStringCellValue());
-                            break;
-                        case 6:
-                            user.setGender(currentCell.getStringCellValue());
-                            break;
-                        case 7:
-                            user.setAddress(currentCell.getStringCellValue());
-                            break;
-                        case 8:
-                            user.setEmail(currentCell.getStringCellValue());
-                            break;
-                        default:
-                            break;
+            for (Sheet sheet : workbook) {
+                Iterator<Row> rows = sheet.iterator();
+                int rowNumber = 0;
+                while (rows.hasNext()) {
+                    Row currentRow = rows.next();
+                    // skip header
+                    if (rowNumber == 0) {
+                        rowNumber++;
+                        continue;
                     }
-                    cellIdx++;
+                    Iterator<Cell> cellsInRow = currentRow.iterator();
+                    int cellIdx = 0;
+                    UserDTO user = new UserDTO();
+                    while (cellsInRow.hasNext()) {
+                        Cell currentCell = cellsInRow.next();
+                        switch (cellIdx) {
+                            case 0:
+                                user.setUsername(currentCell.getStringCellValue());
+                                break;
+                            case 1:
+                                user.setPassword(currentCell.getStringCellValue());
+                                break;
+                            case 2:
+                                user.setFullName(currentCell.getStringCellValue());
+                                break;
+                            case 3:
+                                user.setPhoneNumber(String.valueOf(currentCell.getNumericCellValue()));
+                                break;
+                            case 4:
+                                user.setEmail(currentCell.getStringCellValue());
+                                break;
+                            case 5:
+                                user.setGender(currentCell.getStringCellValue());
+                                break;
+                            case 6:
+                                user.setAddress(currentCell.getStringCellValue());
+                                break;
+                            case 7:
+                                GroupClassDTO groupClassDTO = new GroupClassDTO();
+                                groupClassDTO.setClassName(currentCell.getStringCellValue());
+                                user.setGroupClass(groupClassDTO);
+                                break;
+                            default:
+                                break;
+                        }
+                        cellIdx++;
+                    }
+                    userDTOlist.add(user);
                 }
-                tutorials.add(user);
+//                workbook.close();
             }
-            workbook.close();
-            return tutorials;
         } catch (IOException e) {
             throw new RuntimeException("fail to parse Excel file: " + e.getMessage());
         }
+        return userDTOlist;
     }
 }

@@ -10,5 +10,4 @@ public class ManagerStudentPointApplication {
     public static void main(String[] args) {
         SpringApplication.run(ManagerStudentPointApplication.class, args);
     }
-//    aasdf
 }

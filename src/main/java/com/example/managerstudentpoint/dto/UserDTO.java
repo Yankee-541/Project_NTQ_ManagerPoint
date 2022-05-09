@@ -28,7 +28,7 @@ public class UserDTO extends BaseAbstractDTO<UserDTO> {
     private String gender;
     private String address;
     private String rollNumber;
-    private GroupClass groupClass;
+    private GroupClassDTO groupClass;
     private Set<String> role;
     private Set<String> subject;
 }

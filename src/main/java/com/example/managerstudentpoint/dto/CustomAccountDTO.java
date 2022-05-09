@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class CustomAccountDTO {
-    private LoginRequestDTO loginRequestDTO;
+    private UserDTO loginRequestDTO;
     private String newPassword;
     private String rePassword;
 }
