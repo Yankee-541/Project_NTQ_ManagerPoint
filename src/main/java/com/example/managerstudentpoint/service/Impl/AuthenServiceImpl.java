@@ -14,7 +14,6 @@ import com.example.managerstudentpoint.repository.RoleRepository;
 import com.example.managerstudentpoint.repository.UserRepository;
 import com.example.managerstudentpoint.response.Response;
 import com.example.managerstudentpoint.service.AuthenService;
-import com.example.managerstudentpoint.service.StudentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -47,7 +46,6 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
-    private final GroupClassRepository groupClassRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -65,7 +63,7 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new Response(HttpStatus.BAD_REQUEST));
+                    .body(new Response("Email is exist"));
         }
         User user = new User(
                 signUpRequest.getUsername(),
@@ -187,9 +185,9 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
     @Override
     public ResponseEntity<Response> deleteStudent(Long[] ids) {
         for (long id : ids) {
-            User user = userRepository.findById(id).orElse(null);
+            User user = userRepository.findByIdAndIsDelete(id, false).orElse(null);
             if (user == null) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response("Not found user with id "));
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(HttpStatus.NOT_FOUND));
             }
             user.setIsDelete(true);
             userRepository.save(user);
@@ -198,48 +196,58 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
     }
 
     @Override
-    public ResponseEntity<Response> updateStudent(@NotNull UserDTO studentDTO) {
-        User user = new User(
-                studentDTO.getId(),
-                studentDTO.getUsername(),
-                passwordEncoder.encode(studentDTO.getPassword()),
-                studentDTO.getFullName(),
-                studentDTO.getRollNumber(),
-                studentDTO.getGender(),
-                studentDTO.getAddress(),
-                studentDTO.getIsDelete(),
-                studentDTO.getEmail(),
-                studentDTO.getPhoneNumber()
-        );
-        Set<String> strRoles = studentDTO.getRole();
-        Set<Role> roles = new HashSet<>();
-        if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
-                        break;
-                    case "mod":
-                        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(modRole);
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_STUDENT)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
-                }
-            });
+    public ResponseEntity<Response> updateStudent(@NotNull UserDTO userDTO) {
+        if (!userRepository.existsByUsernameAndIsDeleteAndRollNumber(userDTO.getUsername(), false, userDTO.getRollNumber())){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response(HttpStatus.BAD_REQUEST));
         }
-        user.setRoleList(roles);
-        userRepository.save(user);
-        return ResponseEntity.ok(new Response(HttpStatus.OK));
+        if (userDTO.getGender().equalsIgnoreCase("male") || userDTO.getGender().equalsIgnoreCase("female")){
+            User user = new User(
+                    userDTO.getId(),
+                    passwordEncoder.encode(userDTO.getPassword()),
+                    userDTO.getFullName(),
+                    userDTO.getRollNumber(),
+                    userDTO.getGender(),
+                    userDTO.getAddress(),
+                    userDTO.getEmail(),
+                    userDTO.getPhoneNumber()
+            );
+            user.setUsername(userDTO.getUsername());
+            user.setIsDelete(false);
+            GroupClass groupclass = objectmapper.convertValue(userDTO.getGroupClass(), GroupClass.class);
+            user.setGroupClass(groupclass);
+
+
+            Set<String> strRoles = userDTO.getRole();
+            Set<Role> roles = new HashSet<>();
+            if (strRoles == null) {
+                Role userRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                roles.add(userRole);
+            } else {
+                strRoles.forEach(role -> {
+                    switch (role) {
+                        case "admin":
+                            Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            roles.add(adminRole);
+                            break;
+                        case "mod":
+                            Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            roles.add(modRole);
+                            break;
+                        default:
+                            Role userRole = roleRepository.findByName(ERole.ROLE_STUDENT)
+                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            roles.add(userRole);
+                    }
+                });
+            }
+            user.setRoleList(roles);
+            userRepository.save(user);
+            return ResponseEntity.ok(new Response(HttpStatus.OK));
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response(HttpStatus.BAD_REQUEST));
     }
 
     @Override

@@ -14,7 +14,8 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<User> findById(Long id);
+
+    Optional<User> findByIdAndIsDelete(Long id, boolean isDelete);
 
     @Query("UPDATE User set isDelete = true where id = :id")
     void deleteById(Long id);
@@ -25,7 +26,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByUsername(String username);
 
+    boolean existsByUsernameAndIsDeleteAndRollNumber(String username, boolean isDelete, String rollNumber);
+
     boolean existsByRollNumber(String rollNumber);
+
+    boolean existsByIdAndIsDelete(Long id, boolean delete);
 
     boolean existsByPhoneNumber(String phoneNum);
 
@@ -37,7 +42,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query(value = "select rollnumber from mangerstudentpoint.user order by rollnumber desc LIMIT 1;", nativeQuery = true)
     String getLastRollNumber();
-
-    User findUserByRollNumber(String rollnNumber);
 
 }

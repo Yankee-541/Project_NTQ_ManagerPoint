@@ -93,7 +93,7 @@ public class StudentController {
     }
 
 
-    @GetMapping("/exportScore")
+    @GetMapping("/export-score")
     public void exportScoreBySubjectAndClass(
             @Validated
             @RequestParam(name = "rollNumber") String rollnumber) throws IOException {

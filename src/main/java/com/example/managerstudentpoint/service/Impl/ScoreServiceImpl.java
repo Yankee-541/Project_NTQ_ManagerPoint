@@ -54,15 +54,20 @@ public class ScoreServiceImpl implements ScoreService {
 
     @Override
     public ResponseEntity<Response> addScoreforStudent(ScoreDTO scoreDTO) {
-        if (!userRepository.existsByRollNumber(scoreDTO.getUsers().getRollNumber())) {
+        if (!userRepository.existsByIdAndIsDelete(scoreDTO.getUsers().getId(), false)) {
             return ResponseEntity
-                    .badRequest()
-                    .body(new Response(HttpStatus.NOT_FOUND));
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new Response("Not found student"));
         }
-        if (!subjectRepository.existsById(scoreDTO.getSubject().getId())) {
+        if (!subjectRepository.existsByIdAndStatus(scoreDTO.getSubject().getId(), false)) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new Response("Not found subject"));
+        }
+        if (scoreDTO.getPoint() < 0 || scoreDTO.getPoint() > 10){
             return ResponseEntity
                     .badRequest()
-                    .body(new Response(HttpStatus.NOT_FOUND));
+                    .body(new Response(HttpStatus.BAD_REQUEST));
         }
         Score score = new Score(
                 scoreDTO.getPoint()

@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/student")
+@RequestMapping("api/score")
 public class ScoreController {
     @Autowired
     ScoreService scoreService;
@@ -58,12 +58,12 @@ public class ScoreController {
                 list, StudentExportExcelDTO.class);
     }
 
-    @PostMapping("/addScore")
+    @PostMapping
     public ResponseEntity<Response> addScoreForStudent(@Validated @RequestBody ScoreDTO scoreDTO){
         return scoreService.addScoreforStudent(scoreDTO);
     }
 
-    @PutMapping("/updateScore")
+    @PutMapping
     public ResponseEntity<Response> updateScoreForStudent(@Validated @RequestBody ScoreDTO scoreDTO){
         return scoreService.updateScoreforStudent(scoreDTO);
     }

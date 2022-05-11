@@ -73,7 +73,6 @@ public class User {
     private String phoneNumber;
 
     public User(String username,
-//                String password,
                 String fullName,
                 String rollNumber,
                 String gender,
@@ -81,7 +80,6 @@ public class User {
                 String email,
                 String phoneNumber) {
         this.username = username;
-//        this.password = password;
         this.fullName = fullName;
         this.rollNumber = rollNumber;
         this.gender = gender;
@@ -91,23 +89,19 @@ public class User {
     }
 
     public User(Long id,
-                String username,
                 String password,
                 String fullName,
                 String rollNumber,
                 String gender,
                 String address,
-                Boolean isDelete,
                 String email,
                 String phoneNumber) {
         this.id = id;
-        this.username = username;
         this.password = password;
         this.fullName = fullName;
         this.rollNumber = rollNumber;
         this.gender = gender;
         this.address = address;
-        this.isDelete = isDelete;
         this.email = email;
         this.phoneNumber = phoneNumber;
     }

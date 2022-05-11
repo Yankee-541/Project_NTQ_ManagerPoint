@@ -36,7 +36,7 @@ public class StudentServiceImpl implements StudentService, UserDetailsService {
 
     @Override
     public ResponseEntity<Response> details(Long id) {
-        InfoStudentDTO userDTO = objectMapper.convertValue(userRepository.findById(id), InfoStudentDTO.class);
+        InfoStudentDTO userDTO = objectMapper.convertValue(userRepository.findByIdAndIsDelete(id,false), InfoStudentDTO.class);
         if (userDTO == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new Response("Don't have news with id: " + id)
