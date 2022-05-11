@@ -32,8 +32,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "user")
-//@SQLDelete(sql="UPDATE user set isDelete = true where id = ?")
-
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,21 +73,19 @@ public class User {
     private String phoneNumber;
 
     public User(String username,
-                String password,
+//                String password,
                 String fullName,
                 String rollNumber,
                 String gender,
                 String address,
-//                Boolean isDelete,
                 String email,
                 String phoneNumber) {
         this.username = username;
-        this.password = password;
+//        this.password = password;
         this.fullName = fullName;
         this.rollNumber = rollNumber;
         this.gender = gender;
         this.address = address;
-//        this.isDelete = isDelete;
         this.email = email;
         this.phoneNumber = phoneNumber;
     }
@@ -117,7 +113,8 @@ public class User {
     }
 
     @OneToMany(
-            mappedBy = "users", cascade = CascadeType.ALL
+            mappedBy = "users"
+//            , cascade = CascadeType.ALL
     )
     @JsonIgnore
     private List<Score> reports = new ArrayList<>();
@@ -132,19 +129,4 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roleList = new HashSet<>();
 
-    @Override
-    public String toString() {
-        return
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", rollNumber='" + rollNumber + '\'' +
-                ", email='" + email + '\'';
-    }
-
-    //    @ManyToMany(fetch = FetchType.LAZY)
-//    @JoinTable(name = "sutdent_subject",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "subject_id"))
-//    private Set<Subject> subjectList = new HashSet<>();
 }

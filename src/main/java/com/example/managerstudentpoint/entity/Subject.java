@@ -33,9 +33,10 @@ public class Subject{
     @Column(name = "status")
     private Boolean status;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "sutdent_subject",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "subject_id"))
-    private Set<User> userSet = new HashSet<>();
+    public Subject() {
+    }
+
+    public Subject(String nameSubject) {
+        this.nameSubject = nameSubject;
+    }
 }

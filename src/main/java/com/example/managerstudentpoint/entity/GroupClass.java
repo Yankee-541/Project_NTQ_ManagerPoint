@@ -18,7 +18,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @Table(name = "class")
-public class GroupClass{
+public class GroupClass {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,7 +30,8 @@ public class GroupClass{
     private Boolean status;
 
     @OneToMany(
-            mappedBy = "groupClass",cascade = CascadeType.ALL
+            mappedBy = "groupClass"
+//            , cascade = CascadeType.ALL
     )
     @JsonIgnore
     private List<User> userList;
@@ -40,9 +41,12 @@ public class GroupClass{
         this.className = className;
     }
 
-    public GroupClass(String className, Boolean status) {
+    public GroupClass(String className) {
         this.className = className;
-        this.status = status;
+    }
+
+    public GroupClass(Long id) {
+        this.id = id;
     }
 
     public GroupClass() {

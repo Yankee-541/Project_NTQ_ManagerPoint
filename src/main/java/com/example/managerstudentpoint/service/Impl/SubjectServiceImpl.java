@@ -1,5 +1,6 @@
 package com.example.managerstudentpoint.service.Impl;
 
+import com.example.managerstudentpoint.dto.InfoSubjectDTO;
 import com.example.managerstudentpoint.dto.SubjectDTO;
 import com.example.managerstudentpoint.dto.UserDTO;
 import com.example.managerstudentpoint.entity.Subject;
@@ -27,35 +28,77 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public ResponseEntity<Response> getSubject(String key, Integer page, Integer pageSize) {
-        List<Subject> subjectList = subjectRepository.getSubjectByNameSubject(false,key,PageRequest.of(page-1, pageSize)).getContent();
+        List<Subject> subjectList = subjectRepository.getSubjectByNameSubject(
+                false,
+                key,
+                PageRequest.of(page-1, pageSize)).getContent();
         if (subjectList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new Response("Don't have subject","")
+                    new Response(HttpStatus.NOT_FOUND)
             );
         } else {
-            List<SubjectDTO> subjectDTOS = new ArrayList<>();
+            List<InfoSubjectDTO> subjectDTOS = new ArrayList<>();
             for (Subject subject : subjectList) {
-                subjectDTOS.add(objectMapper.convertValue(subject, SubjectDTO.class));
+                subjectDTOS.add(objectMapper.convertValue(subject, InfoSubjectDTO.class));
             }
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new Response("ok",subjectDTOS)
+                    new Response(subjectDTOS)
             );
         }
     }
 
     @Override
-    public ResponseEntity<String> deleteSubject(Long[] ids) {
+    public ResponseEntity<Response> deleteSubject(Long[] ids) {
         for (Long id : ids){
-            Subject subject = subjectRepository.findById(id).orElse(null);
-            if (subject == null){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found with id");
+            if(id <= 0){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response(HttpStatus.BAD_REQUEST));
             }
-            subject.setStatus(true);
-            subjectRepository.save(subject);
+
+            Subject subject = subjectRepository.findById(id).orElse(null);
+            if (subject != null && !subject.getStatus()){
+                subject.setStatus(true);
+                subjectRepository.save(subject);
+                return ResponseEntity.status(HttpStatus.OK).body(new Response(HttpStatus.OK));
+            }else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(HttpStatus.NOT_FOUND));
+            }
         }
-        return ResponseEntity.status(HttpStatus.OK).body("Delete success");
+        return ResponseEntity.status(HttpStatus.OK).body(new Response(HttpStatus.OK));
+    }
 
+    @Override
+    public ResponseEntity<Response> createSubject(SubjectDTO subjectDTO) {
+        if(subjectRepository.existsByNameSubject(subjectDTO.getNameSubject())){
+            return ResponseEntity
+                    .badRequest()
+                    .body(new Response(HttpStatus.BAD_REQUEST));
+        }
+        Subject subject = new Subject(
+                subjectDTO.getNameSubject()
+        );
+        subject.setStatus(false);
+        subjectRepository.save(subject);
 
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new Response(subjectDTO));
+    }
+
+    @Override
+    public ResponseEntity<Response> updateSubject(SubjectDTO subjectDTO) {
+        Subject subject = subjectRepository.findById(subjectDTO.getId()).orElse(null);
+        if(subject == null || subject.getStatus()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new Response(HttpStatus.NOT_FOUND)
+            );
+        }else {
+            subjectDTO.setStatus(subject.getStatus());
+            subjectRepository.save(objectMapper.convertValue(subjectDTO,Subject.class));
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new Response(subjectDTO)
+            );
+
+        }
     }
 
 

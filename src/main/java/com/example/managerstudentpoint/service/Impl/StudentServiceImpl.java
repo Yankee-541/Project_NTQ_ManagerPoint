@@ -1,5 +1,6 @@
 package com.example.managerstudentpoint.service.Impl;
 
+import com.example.managerstudentpoint.dto.InfoStudentDTO;
 import com.example.managerstudentpoint.dto.StudentExportExcelDTO;
 import com.example.managerstudentpoint.dto.UserDTO;
 import com.example.managerstudentpoint.entity.CustomUserDetails;
@@ -35,14 +36,14 @@ public class StudentServiceImpl implements StudentService, UserDetailsService {
 
     @Override
     public ResponseEntity<Response> details(Long id) {
-        UserDTO userDTO = objectMapper.convertValue(userRepository.findById(id), UserDTO.class);
+        InfoStudentDTO userDTO = objectMapper.convertValue(userRepository.findById(id), InfoStudentDTO.class);
         if (userDTO == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new Response("Don't have news with id: " + id, "")
+                    new Response("Don't have news with id: " + id)
             );
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new Response("Found user have id: " + id, userDTO)
+                    new Response(userDTO)
             );
         }
     }
@@ -55,7 +56,7 @@ public class StudentServiceImpl implements StudentService, UserDetailsService {
                 PageRequest.of(page - 1, pageSize)).getContent();
         if (studentList.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new Response("Don't have students","")
+                    new Response(HttpStatus.BAD_REQUEST)
             );
         } else {
             List<UserDTO> userDTOList = new ArrayList<>();
@@ -63,7 +64,7 @@ public class StudentServiceImpl implements StudentService, UserDetailsService {
                 userDTOList.add(objectMapper.convertValue(student, UserDTO.class));
             }
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new Response("",userDTOList)
+                    new Response(userDTOList)
             );
         }
     }

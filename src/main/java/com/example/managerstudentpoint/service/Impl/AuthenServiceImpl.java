@@ -60,21 +60,16 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new Response("Error: Username is already taken!", ""));
+                    .body(new Response("Username is exist !!!"));
         }
         if (userRepository.existsByEmail(signUpRequest.getEmail())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new Response("Error: Email is already in use!", ""));
-        }
-        if (!groupClassRepository.existsById(signUpRequest.getGroupClass().getId())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new Response("Error: Group class isn't exist!", ""));
+                    .body(new Response(HttpStatus.BAD_REQUEST));
         }
         User user = new User(
                 signUpRequest.getUsername(),
-                passwordEncoder.encode(signUpRequest.getPassword()),
+//                passwordEncoder.encode(signUpRequest.getPassword()),
                 signUpRequest.getFullName(),
                 generateRollNumber(),
                 signUpRequest.getGender(),
@@ -83,39 +78,46 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
                 signUpRequest.getPhoneNumber()
         );
         user.setIsDelete(false);
+        user.setPassword(passwordEncoder.encode("123456"));
         GroupClass groupclass = objectmapper.convertValue(signUpRequest.getGroupClass(), GroupClass.class);
-        if (groupClassRepository.existsById(signUpRequest.getGroupClass().getId())) {
-            user.setGroupClass(groupclass);
-        }
+//        if (groupclass != null){
+//            if (groupClassRepository.existsById(signUpRequest.getGroupClass().getId())) {
+                user.setGroupClass(groupclass);
+//            }
+//        }
+
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
+
         if (strRoles == null) {
             Role userRole = roleRepository.findByName(ERole.ROLE_ADMIN)
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
         } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
-                        break;
-                    case "mod":
-                        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(modRole);
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_STUDENT)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
-                }
-            });
+                strRoles.forEach(role -> {
+                    switch (role) {
+                        case "admin":
+                            Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            roles.add(adminRole);
+                            break;
+                        case "mod":
+                            Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            roles.add(modRole);
+                            break;
+                        case "student":
+                            Role userRole = roleRepository.findByName(ERole.ROLE_STUDENT)
+                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            roles.add(userRole);
+                    }
+                });
+
+
         }
         user.setRoleList(roles);
         userRepository.save(user);
-        return ResponseEntity.status(HttpStatus.OK).body(new Response("Create sucess", user));
+        return ResponseEntity.status(HttpStatus.OK).body(new Response(HttpStatus.OK));
     }
 
     @Override
@@ -131,7 +133,6 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
                     .map(item -> item.getAuthority())
                     .collect(Collectors.toList());
             return ResponseEntity.ok(new JwtResponse(jwt,
-                    userDetails.getId(),
                     userDetails.getUsername(),
                     userDetails.getEmail(),
                     roles
@@ -153,7 +154,6 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
             return true;
         }
         return false;
-
     }
 
     @Override
@@ -170,16 +170,16 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
                 if (!userRepository.existsByEmail(userDTO.getEmail())) {
                     userDTO.setRollNumber(generateRollNumber());
                     userRepository.save(objectmapper.convertValue(userDTO, User.class));
-                    return ResponseEntity.status(HttpStatus.OK).body(new Response("Create sucess", userDTO));
+                    return ResponseEntity.status(HttpStatus.OK).body(new Response(HttpStatus.OK));
                 } else {
-                    return ResponseEntity.status(HttpStatus.OK).body(new Response("Email is exist", ""));
+                    return ResponseEntity.status(HttpStatus.OK).body(new Response(HttpStatus.BAD_REQUEST));
                 }
             } else {
-                return ResponseEntity.status(HttpStatus.OK).body(new Response("Phone number is exist", ""));
+                return ResponseEntity.status(HttpStatus.OK).body(new Response(HttpStatus.BAD_REQUEST));
             }
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new Response("Username is exist", "")
+                    new Response(HttpStatus.BAD_REQUEST)
             );
         }
     }
@@ -239,7 +239,7 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
         }
         user.setRoleList(roles);
         userRepository.save(user);
-        return ResponseEntity.ok(new Response("", user));
+        return ResponseEntity.ok(new Response(HttpStatus.OK));
     }
 
     @Override
@@ -289,11 +289,11 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
             user.setRoleList(roles);
             userRepository.save(user);
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new Response("Change password successful!", null)
+                    new Response(HttpStatus.OK)
             );
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new Response("Username or password is invalid!")
+                    new Response(HttpStatus.BAD_REQUEST)
             );
         }
     }

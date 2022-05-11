@@ -8,6 +8,7 @@ import com.example.managerstudentpoint.dto.UserDTO;
 import com.example.managerstudentpoint.entity.BaseExportExcelModel;
 import com.example.managerstudentpoint.response.Response;
 import com.example.managerstudentpoint.service.AuthenService;
+import com.example.managerstudentpoint.service.ExcelFileService;
 import com.example.managerstudentpoint.service.Impl.XLSXFileServiceImpl;
 import com.example.managerstudentpoint.service.StudentService;
 import com.example.managerstudentpoint.service.SubjectService;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -35,6 +38,8 @@ import java.util.List;
 @RestController
 @RequestMapping("api/student")
 public class StudentController {
+    @Autowired
+    ExcelFileService fileService;
 
     @Autowired
     AuthenticationManager authenticationMana;
@@ -71,12 +76,6 @@ public class StudentController {
         return userService.details(id);
     }
 
-    @PutMapping("/login")
-    public ResponseEntity<?> login(@Validated @RequestBody LoginRequestDTO loginRequest)
-            throws NoSuchAlgorithmException {
-        return authenService.login(loginRequest);
-    }
-
     @DeleteMapping()
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Response> deleteStudent(@RequestBody Long[] ids) {
@@ -85,32 +84,16 @@ public class StudentController {
 
     @PutMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> updateStudent(@Validated @RequestBody UserDTO updateStudent)
+    public ResponseEntity<?> updateStudent(@Validated @RequestBody UserDTO userDTO)
             throws NoSuchAlgorithmException {
-        return authenService.updateStudent(updateStudent);
-    }
-
-    @PostMapping("/signup")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> addStudent(@Validated @RequestBody UserDTO signUpRequest)
-            throws NoSuchAlgorithmException {
-        return authenService.signup(signUpRequest);
-    }
-
-    @PutMapping("changePassword")
-//    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Response> changePassword(@RequestBody CustomAccountDTO customAccountDTO)
-            throws NoSuchAlgorithmException {
-        if (!customAccountDTO.getNewPassword().equals(customAccountDTO.getRePassword())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    new Response("New password and re-password are not match!")
-            );
+        if (StringUtils.countOccurrencesOf(userDTO.getUsername(), " ") != 0){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Full name is not blank or empty!");
         }
-        return authenService.changePassword(customAccountDTO.getLoginRequestDTO(), customAccountDTO.getNewPassword());
+        return authenService.updateStudent(userDTO);
     }
+
 
     @GetMapping("/exportScore")
-//    @PreAuthorize("hasRole('ADMIN')")
     public void exportScoreBySubjectAndClass(
             @Validated
             @RequestParam(name = "rollNumber") String rollnumber) throws IOException {
@@ -122,6 +105,11 @@ public class StudentController {
                 "test",
                 "repost student",
                 list, StudentExportExcelDTO.class);
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<String> importStudents(@RequestParam("file") MultipartFile file){
+        return fileService.importStudents(file);
     }
 
 }

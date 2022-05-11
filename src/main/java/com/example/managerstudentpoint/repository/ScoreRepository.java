@@ -16,7 +16,7 @@ public interface ScoreRepository extends JpaRepository<Score, Long> {
     Page<Score> findAllBySubject(Subject subject, Pageable pageable);
 
     @Query("select s from Score s join s.users u" +
-            " where s.users.isDelete=:isDelete and s.subject.id = :sub_id and  s.users.groupClass.id =:c_id")
+            " where s.users.isDelete=:isDelete and s.subject.id = :sub_id and s.users.groupClass.id =:c_id")
     List<Score> getScoresByGroupClassAndSubject(boolean isDelete,Long sub_id, Long c_id);
 
     @Query("select  s from Score s join s.users u " +

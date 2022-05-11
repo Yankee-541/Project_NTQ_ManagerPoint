@@ -1,6 +1,8 @@
 package com.example.managerstudentpoint.service.Impl;
 
 import com.example.managerstudentpoint.dto.GroupClassDTO;
+import com.example.managerstudentpoint.dto.InfoClassDTO;
+import com.example.managerstudentpoint.dto.InfoSubjectDTO;
 import com.example.managerstudentpoint.entity.GroupClass;
 import com.example.managerstudentpoint.entity.User;
 import com.example.managerstudentpoint.repository.GroupClassRepository;
@@ -14,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -25,14 +28,32 @@ public class GroupClassServiceImpl implements GroupClassService {
     private final UserRepository userRepository;
 
     @Override
-    public ResponseEntity<Response> classById(Long id) {
+    public ResponseEntity<Response> listClass(String key) {
+        List<GroupClass> groupClasses = classRepository.getGroupClassByClassName(false, key);
+        if (groupClasses.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new Response(HttpStatus.NOT_FOUND)
+            );
+        } else {
+            List<InfoClassDTO> groupClassDTOS = new ArrayList<>();
+            for (GroupClass groupClass : groupClasses) {
+                groupClassDTOS.add(objectMapper.convertValue(groupClass, InfoClassDTO.class));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new Response(groupClassDTOS)
+            );
+        }
+    }
+
+    @Override
+    public ResponseEntity<Response> getStudentByClassId(Long id) {
         GroupClassDTO groupClassDTO = objectMapper.convertValue(classRepository.findById(id).orElse(null), GroupClassDTO.class);
         if (groupClassDTO == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new Response("Don't have class with id: " + id)
+                    new Response(HttpStatus.NOT_FOUND)
             );
         } else {
-            List<User> userList = userRepository.findAllByGroupClass(new GroupClass(id, null));
+            List<User> userList = userRepository.findAllByGroupClass(new GroupClass(id));
             if (!userList.isEmpty()) {
                 groupClassDTO.setUserList(userList);
             }
@@ -44,33 +65,59 @@ public class GroupClassServiceImpl implements GroupClassService {
     }
 
     @Override
-    public ResponseEntity<String> deleteClass(Long[] ids) {
+    public ResponseEntity<Response> deleteClass(Long[] ids) {
         for (long id : ids) {
-            GroupClass groupClass = classRepository.findById(id).orElse(null);
-            if(groupClass == null){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found class with id ");
+            if (id<=0){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response(HttpStatus.BAD_REQUEST));
+
             }
-            groupClass.setStatus(true);
-            classRepository.save(groupClass);
+            GroupClass groupClass = classRepository.findById(id).orElse(null);
+            if(groupClass != null && !groupClass.getStatus()){
+                groupClass.setStatus(true);
+                classRepository.save(groupClass);
+                return ResponseEntity.status(HttpStatus.OK).body(new Response(HttpStatus.OK));
+            }else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(HttpStatus.NOT_FOUND));
+            }
+
         }
-        return ResponseEntity.ok("Delete class successful!");
+        return ResponseEntity.status(HttpStatus.OK).body(new Response(HttpStatus.OK));
     }
+
+    @Override
+    public ResponseEntity<Response> updateClass(GroupClassDTO groupClassDTO) {
+        GroupClass groupClass = classRepository.findById(groupClassDTO.getId()).orElse(null);
+        if(groupClass == null || groupClass.getStatus()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new Response(HttpStatus.NOT_FOUND)
+            );
+        }else {
+            groupClassDTO.setStatus(groupClass.getStatus());
+            classRepository.save(objectMapper.convertValue(groupClassDTO, GroupClass.class));
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new Response(groupClassDTO)
+            );
+        }
+
+    }
+
+
 
     @Override
     public ResponseEntity<Response> addClass(GroupClassDTO groupClassDTO) {
         if (classRepository.existsByClassName(groupClassDTO.getClassName())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new Response("Error: Group class is already taken!", ""));
+                    .body(new Response(HttpStatus.BAD_REQUEST));
         }
         GroupClass groupClass = new GroupClass(
-                groupClassDTO.getClassName(),
-                groupClassDTO.getStatus()
+                groupClassDTO.getClassName()
         );
+        groupClass.setStatus(false);
         classRepository.save(groupClass);
 
         return ResponseEntity
-                .badRequest()
-                .body(new Response("", groupClassDTO));
+                .status(HttpStatus.OK)
+                .body(new Response(groupClassDTO));
     }
 }

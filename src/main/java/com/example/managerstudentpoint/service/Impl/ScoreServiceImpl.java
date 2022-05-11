@@ -40,16 +40,14 @@ public class ScoreServiceImpl implements ScoreService {
         subject.setId(key);
         List<Score> scores = scoreRepository.findAllBySubject(subject, PageRequest.of(page - 1, pageSize)).getContent();
         if (scores.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new Response("Don't have subject", "")
-            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(HttpStatus.NOT_FOUND));
         } else {
             List<ScoreDTO> scoreDTOS = new ArrayList<>();
             for (Score score : scores) {
                 scoreDTOS.add(objectMapper.convertValue(score, ScoreDTO.class));
             }
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new Response("ok", scoreDTOS)
+                    new Response( scoreDTOS)
             );
         }
     }
@@ -59,12 +57,12 @@ public class ScoreServiceImpl implements ScoreService {
         if (!userRepository.existsByRollNumber(scoreDTO.getUsers().getRollNumber())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new Response("Error: Student is not exist!", ""));
+                    .body(new Response(HttpStatus.NOT_FOUND));
         }
         if (!subjectRepository.existsById(scoreDTO.getSubject().getId())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new Response("Error: Subject is not exist!", ""));
+                    .body(new Response(HttpStatus.NOT_FOUND));
         }
         Score score = new Score(
                 scoreDTO.getPoint()
@@ -76,14 +74,14 @@ public class ScoreServiceImpl implements ScoreService {
         score.setUsers(user);
         score.setSubject(subject);
         scoreRepository.save(score);
-        return ResponseEntity.status(HttpStatus.OK).body(new Response("Create sucess", score));
+        return ResponseEntity.status(HttpStatus.OK).body(new Response(HttpStatus.OK));
     }
 
     @Override
     public ResponseEntity<Response> updateScoreforStudent(ScoreDTO scoreDTO) {
         Score score = objectMapper.convertValue(scoreDTO,Score.class);
         scoreRepository.save(score);
-        return ResponseEntity.status(HttpStatus.OK).body(new Response("Update score sucess", score));
+        return ResponseEntity.status(HttpStatus.OK).body(new Response(HttpStatus.OK));
     }
 
     @Override
