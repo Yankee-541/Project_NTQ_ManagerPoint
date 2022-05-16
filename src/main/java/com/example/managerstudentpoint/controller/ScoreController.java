@@ -33,8 +33,8 @@ public class ScoreController {
 
     @GetMapping("/export")
     @PreAuthorize("hasRole('ADMIN')")
-    public void exportScoreBySubjectAndClass(@Validated @RequestParam(name = "subId") Long sub_id,
-                                             @RequestParam(name = "cId") Long c_id) throws IOException {
+    public void exportScoreBySubjectAndClass(@Validated @RequestParam(name = "subject-id") Long sub_id,
+                                             @RequestParam(name = "class-id") Long c_id) throws IOException {
         List<BaseExportExcelModel> list = new ArrayList<>();
         for (StudentExportExcelDTO user : scoreService.getScoreBySubjectAndClass(sub_id, c_id)) {
             list.add(user);

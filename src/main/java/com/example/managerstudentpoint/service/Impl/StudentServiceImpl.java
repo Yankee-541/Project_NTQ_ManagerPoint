@@ -59,9 +59,9 @@ public class StudentServiceImpl implements StudentService, UserDetailsService {
                     new Response(HttpStatus.BAD_REQUEST)
             );
         } else {
-            List<UserDTO> userDTOList = new ArrayList<>();
-            for (User student : studentList) {
-                userDTOList.add(objectMapper.convertValue(student, UserDTO.class));
+            List<InfoStudentDTO> userDTOList = new ArrayList<>();
+            for (User user : studentList) {
+                userDTOList.add(objectMapper.convertValue(user, InfoStudentDTO.class));
             }
             return ResponseEntity.status(HttpStatus.OK).body(
                     new Response(userDTOList)

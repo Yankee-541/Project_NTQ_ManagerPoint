@@ -137,6 +137,61 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
     }
 
     @Override
+    public ResponseEntity<Response> resetPassword(UserDTO userDTO) {
+        if (userRepository.existsByUsername(userDTO.getUsername())) {
+            User user = userRepository.getUserByUsername(userDTO.getUsername());
+            user.setId(user.getId());
+            user.setUsername(user.getUsername());
+            user.setPassword(passwordEncoder.encode("123456"));
+            user.setEmail(user.getEmail());
+            user.setGender(user.getGender());
+            user.setRollNumber(user.getRollNumber());
+            user.setAddress(user.getAddress());
+            user.setFullName(user.getFullName());
+            user.setPhoneNumber(user.getPhoneNumber());
+
+            GroupClass groupclass = objectmapper.convertValue(user.getGroupClass(), GroupClass.class);
+            user.setGroupClass(groupclass);
+
+            Set<String> strRoles = userDTO.getRole();
+            Set<Role> roles = new HashSet<>();
+            if (strRoles == null) {
+                Role userRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                roles.add(userRole);
+            } else {
+                strRoles.forEach(role -> {
+                    switch (role) {
+                        case "admin":
+                            Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            roles.add(adminRole);
+                            break;
+                        case "mod":
+                            Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            roles.add(modRole);
+                            break;
+                        default:
+                            Role userRole = roleRepository.findByName(ERole.ROLE_STUDENT)
+                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                            roles.add(userRole);
+                    }
+                });
+            }
+            user.setRoleList(roles);
+            userRepository.save(user);
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new Response(HttpStatus.OK)
+            );
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new Response(HttpStatus.NOT_FOUND)
+            );
+        }
+    }
+
+    @Override
     public boolean login_1(UserDTO loginRequest) {
         if (userRepository.existsByUsername(loginRequest.getUsername())) {
             Authentication authentication = authenticationMana.authenticate(
@@ -155,27 +210,6 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
         User user = (User) objectmapper.convertValue(userRepository.findById(userId).orElse(null),
                 UserRepository.class);
         return (UserDetails) user;
-    }
-
-    @Override
-    public ResponseEntity<Response> addAccStudent(UserDTO userDTO) {
-        if (!userRepository.existsByUsername(userDTO.getUsername())) {
-            if (!userRepository.existsByPhoneNumber(userDTO.getPhoneNumber())) {
-                if (!userRepository.existsByEmail(userDTO.getEmail())) {
-                    userDTO.setRollNumber(generateRollNumber());
-                    userRepository.save(objectmapper.convertValue(userDTO, User.class));
-                    return ResponseEntity.status(HttpStatus.OK).body(new Response(HttpStatus.OK));
-                } else {
-                    return ResponseEntity.status(HttpStatus.OK).body(new Response(HttpStatus.BAD_REQUEST));
-                }
-            } else {
-                return ResponseEntity.status(HttpStatus.OK).body(new Response(HttpStatus.BAD_REQUEST));
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new Response(HttpStatus.BAD_REQUEST)
-            );
-        }
     }
 
     @Override

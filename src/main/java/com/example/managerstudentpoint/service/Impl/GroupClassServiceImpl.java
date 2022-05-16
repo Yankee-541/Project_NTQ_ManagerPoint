@@ -120,13 +120,12 @@ public class GroupClassServiceImpl implements GroupClassService {
 
     }
 
-
     @Override
     public ResponseEntity<Response> addClass(GroupClassDTO groupClassDTO) {
         if (classRepository.existsByClassName(groupClassDTO.getClassName())) {
             return ResponseEntity
                     .badRequest()
-                    .body(new Response(HttpStatus.BAD_REQUEST));
+                    .body(new Response("Name class is exist!!!"));
         }
         GroupClass groupClass = new GroupClass(
                 groupClassDTO.getClassName()

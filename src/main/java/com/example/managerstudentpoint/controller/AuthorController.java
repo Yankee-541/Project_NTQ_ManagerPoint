@@ -42,7 +42,7 @@ public class AuthorController {
         return authenService.signup(userDTO);
     }
 
-    @PutMapping("changePassword")
+    @PutMapping("change-password")
     public ResponseEntity<Response> changePassword(@RequestBody CustomAccountDTO customAccountDTO)
             throws NoSuchAlgorithmException {
         if (!customAccountDTO.getNewPassword().equals(customAccountDTO.getRePassword())) {
@@ -51,6 +51,12 @@ public class AuthorController {
             );
         }
         return authenService.changePassword(customAccountDTO.getLoginRequestDTO(), customAccountDTO.getNewPassword());
+    }
+
+    @PutMapping("reset-password")
+    public ResponseEntity<Response> resetPassword(@RequestBody UserDTO userDTO){
+        return authenService.resetPassword(userDTO);
+
     }
 
 }

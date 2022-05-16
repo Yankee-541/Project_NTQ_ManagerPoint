@@ -20,15 +20,11 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("UPDATE User set isDelete = true where id = :id")
     void deleteById(Long id);
 
-    List<User> findAllByGroupClass(GroupClass groupClass);
-
     User findByUsername(String username);
 
     boolean existsByUsername(String username);
 
     boolean existsByUsernameAndIsDeleteAndRollNumber(String username, boolean isDelete, String rollNumber);
-
-    boolean existsByRollNumber(String rollNumber);
 
     boolean existsByIdAndIsDelete(Long id, boolean delete);
 
@@ -37,10 +33,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
 
     @Query(value = "select u from User u left join u.groupClass c " +
-            "where (concat(u.fullName, u.rollNumber, u.username ) like %:key% or c.className like %:key%) and (:status = u.isDelete) ")
+            "where (concat(u.fullName, u.rollNumber, u.username ) like %:key% " +
+            "or c.className like %:key%) and (:status = u.isDelete) ")
     Page<User> getUsersAllByFullNameAndRollNumberAndUsername(boolean status,String key, Pageable pageable);
 
-    @Query(value = "select rollnumber from mangerstudentpoint.user order by rollnumber desc LIMIT 1;", nativeQuery = true)
+    User getUserByUsername(String name);
+
+    @Query(value = "select rollnumber from mangerstudentpoint.user " +
+            "order by rollnumber desc LIMIT 1;", nativeQuery = true)
     String getLastRollNumber();
 
 }

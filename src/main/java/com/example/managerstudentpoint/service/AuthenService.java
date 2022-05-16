@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.security.NoSuchAlgorithmException;
 
 public interface AuthenService {
+
     ResponseEntity<JwtResponse> login(LoginRequestDTO authenRequestDTO) throws NoSuchAlgorithmException;
 
     ResponseEntity<Response> signup(UserDTO studentDTO) throws NoSuchAlgorithmException;
@@ -18,12 +19,12 @@ public interface AuthenService {
 
     boolean login_1(UserDTO account);
 
-    ResponseEntity<Response> addAccStudent(UserDTO userDTO) throws NoSuchAlgorithmException;
-
     ResponseEntity<Response> deleteStudent(Long[] id);
 
     ResponseEntity<Response> updateStudent(UserDTO studentDTO) throws NoSuchAlgorithmException;
 
     ResponseEntity<Response> changePassword(UserDTO loginRequestDTO, String newPass) throws NoSuchAlgorithmException;
+
+    ResponseEntity<Response> resetPassword(UserDTO userDTO);
 
 }
