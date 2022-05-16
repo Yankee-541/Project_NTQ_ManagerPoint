@@ -2,6 +2,7 @@ package com.example.managerstudentpoint.service.Impl;
 
 import com.example.managerstudentpoint.dto.GroupClassDTO;
 import com.example.managerstudentpoint.dto.InfoClassDTO;
+import com.example.managerstudentpoint.dto.InfoStudentDTO;
 import com.example.managerstudentpoint.dto.InfoSubjectDTO;
 import com.example.managerstudentpoint.entity.GroupClass;
 import com.example.managerstudentpoint.entity.User;
@@ -46,37 +47,55 @@ public class GroupClassServiceImpl implements GroupClassService {
     }
 
     @Override
-    public ResponseEntity<Response> getStudentByClassId(Long id) {
-        GroupClassDTO groupClassDTO = objectMapper.convertValue(classRepository.findById(id).orElse(null), GroupClassDTO.class);
-        if (groupClassDTO == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    new Response(HttpStatus.NOT_FOUND)
-            );
-        } else {
-            List<User> userList = userRepository.findAllByGroupClass(new GroupClass(id));
-            if (!userList.isEmpty()) {
-                groupClassDTO.setUserList(userList);
+    public ResponseEntity<Response> getStudentByClassId(String groupClass) {
+
+        List<User> users = classRepository.findAllStudentByClassName(false, groupClass);
+
+        if (users.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(HttpStatus.NOT_FOUND));
+        }else {
+            List<InfoStudentDTO> infoStudentDTOS = new ArrayList<>();
+            for (User user : users) {
+                InfoClassDTO infoClassDTO = new InfoClassDTO();
+                InfoStudentDTO infoStudentDTO = objectMapper.convertValue(infoClassDTO.getUsers(), InfoStudentDTO.class);
+                infoClassDTO.setUsers(infoStudentDTO);
+                infoStudentDTOS.add(objectMapper.convertValue(user, InfoStudentDTO.class));
             }
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new Response(groupClassDTO)
+                    new Response(infoStudentDTOS)
             );
 
         }
+//        GroupClassDTO groupClassDTO = objectMapper.convertValue(classRepository.findById(id).orElse(null), GroupClassDTO.class);
+//        if (groupClassDTO == null) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+//                    new Response(HttpStatus.NOT_FOUND)
+//            );
+//        } else {
+//            List<User> userList = userRepository.findAllByGroupClass(new GroupClass(id));
+//            if (!userList.isEmpty()) {
+//                groupClassDTO.setUserList(userList);
+//                return ResponseEntity.status(HttpStatus.OK).body(
+//                        new Response(groupClassDTO)
+//                );
+//            }
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response("Don't have student in this class"));
+//        }
     }
 
     @Override
     public ResponseEntity<Response> deleteClass(Long[] ids) {
         for (long id : ids) {
-            if (id<=0){
+            if (id <= 0) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response(HttpStatus.BAD_REQUEST));
 
             }
             GroupClass groupClass = classRepository.findById(id).orElse(null);
-            if(groupClass != null && !groupClass.getStatus()){
+            if (groupClass != null && !groupClass.getStatus()) {
                 groupClass.setStatus(true);
                 classRepository.save(groupClass);
                 return ResponseEntity.status(HttpStatus.OK).body(new Response(HttpStatus.OK));
-            }else {
+            } else {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(HttpStatus.NOT_FOUND));
             }
 
@@ -87,11 +106,11 @@ public class GroupClassServiceImpl implements GroupClassService {
     @Override
     public ResponseEntity<Response> updateClass(GroupClassDTO groupClassDTO) {
         GroupClass groupClass = classRepository.findById(groupClassDTO.getId()).orElse(null);
-        if(groupClass == null || groupClass.getStatus()){
+        if (groupClass == null || groupClass.getStatus()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     new Response(HttpStatus.NOT_FOUND)
             );
-        }else {
+        } else {
             groupClassDTO.setStatus(groupClass.getStatus());
             classRepository.save(objectMapper.convertValue(groupClassDTO, GroupClass.class));
             return ResponseEntity.status(HttpStatus.OK).body(
@@ -100,7 +119,6 @@ public class GroupClassServiceImpl implements GroupClassService {
         }
 
     }
-
 
 
     @Override

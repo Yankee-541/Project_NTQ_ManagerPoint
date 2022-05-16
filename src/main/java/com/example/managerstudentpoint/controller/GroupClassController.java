@@ -33,9 +33,9 @@ public class GroupClassController {
         return groupClassService.listClass(key);
     }
 
-    @GetMapping("/{id}/student")
-    public ResponseEntity<Response> getStudentByClassId(@PathVariable Long id) {
-        return groupClassService.getStudentByClassId(id);
+    @GetMapping("/{groupClass}/student")
+    public ResponseEntity<Response> getStudentByClassId(@PathVariable String groupClass) {
+        return groupClassService.getStudentByClassId(groupClass);
     }
 
     @PostMapping

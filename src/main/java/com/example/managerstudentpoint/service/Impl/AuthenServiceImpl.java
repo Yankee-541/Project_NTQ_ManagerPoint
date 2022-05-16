@@ -47,6 +47,7 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
 
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
@@ -78,11 +79,8 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
         user.setIsDelete(false);
         user.setPassword(passwordEncoder.encode("123456"));
         GroupClass groupclass = objectmapper.convertValue(signUpRequest.getGroupClass(), GroupClass.class);
-//        if (groupclass != null){
-//            if (groupClassRepository.existsById(signUpRequest.getGroupClass().getId())) {
-                user.setGroupClass(groupclass);
-//            }
-//        }
+
+        user.setGroupClass(groupclass);
 
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
@@ -92,26 +90,24 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
                     .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
             roles.add(userRole);
         } else {
-                strRoles.forEach(role -> {
-                    switch (role) {
-                        case "admin":
-                            Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(adminRole);
-                            break;
-                        case "mod":
-                            Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(modRole);
-                            break;
-                        case "student":
-                            Role userRole = roleRepository.findByName(ERole.ROLE_STUDENT)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            roles.add(userRole);
-                    }
-                });
-
-
+            strRoles.forEach(role -> {
+                switch (role) {
+                    case "admin":
+                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(adminRole);
+                        break;
+                    case "mod":
+                        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(modRole);
+                        break;
+                    case "student":
+                        Role userRole = roleRepository.findByName(ERole.ROLE_STUDENT)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(userRole);
+                }
+            });
         }
         user.setRoleList(roles);
         userRepository.save(user);
@@ -197,10 +193,10 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
 
     @Override
     public ResponseEntity<Response> updateStudent(@NotNull UserDTO userDTO) {
-        if (!userRepository.existsByUsernameAndIsDeleteAndRollNumber(userDTO.getUsername(), false, userDTO.getRollNumber())){
+        if (!userRepository.existsByUsernameAndIsDeleteAndRollNumber(userDTO.getUsername(), false, userDTO.getRollNumber())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response(HttpStatus.BAD_REQUEST));
         }
-        if (userDTO.getGender().equalsIgnoreCase("male") || userDTO.getGender().equalsIgnoreCase("female")){
+        if (userDTO.getGender().equalsIgnoreCase("male") || userDTO.getGender().equalsIgnoreCase("female")) {
             User user = new User(
                     userDTO.getId(),
                     passwordEncoder.encode(userDTO.getPassword()),

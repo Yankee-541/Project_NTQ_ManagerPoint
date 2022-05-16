@@ -1,5 +1,7 @@
 package com.example.managerstudentpoint.service.Impl;
 
+import com.example.managerstudentpoint.dto.InfoScoreDTO;
+import com.example.managerstudentpoint.dto.InfoStudentDTO;
 import com.example.managerstudentpoint.dto.ScoreDTO;
 import com.example.managerstudentpoint.dto.StudentExportExcelDTO;
 import com.example.managerstudentpoint.dto.SubjectDTO;
@@ -35,19 +37,24 @@ public class ScoreServiceImpl implements ScoreService {
     private final SubjectRepository subjectRepository;
 
     @Override
-    public ResponseEntity<Response> getScoresByClassAndCourse(Long key, Integer page, Integer pageSize) {
-        Subject subject = new Subject();
-        subject.setId(key);
-        List<Score> scores = scoreRepository.findAllBySubject(subject, PageRequest.of(page - 1, pageSize)).getContent();
+    public ResponseEntity<Response> getScoresBySubject(String key, Integer page, Integer pageSize) {
+        List<Score> scores = scoreRepository.findAllScoreBySubject(
+                false,
+                key,
+                PageRequest.of(page - 1, pageSize)).getContent();
         if (scores.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(HttpStatus.NOT_FOUND));
         } else {
-            List<ScoreDTO> scoreDTOS = new ArrayList<>();
-            for (Score score : scores) {
-                scoreDTOS.add(objectMapper.convertValue(score, ScoreDTO.class));
+            List<InfoScoreDTO> scoreDTOS = new ArrayList<>();
+            for (Score score : scores){
+                InfoScoreDTO scoreDTO = new InfoScoreDTO();
+                InfoStudentDTO infoStudentDTO = objectMapper.convertValue(scoreDTO.getUsers(), InfoStudentDTO.class);
+                scoreDTO.setUsers(infoStudentDTO);
+                scoreDTOS.add(objectMapper.convertValue(score, InfoScoreDTO.class));
+
             }
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new Response( scoreDTOS)
+                    new Response(scoreDTOS)
             );
         }
     }
@@ -64,27 +71,51 @@ public class ScoreServiceImpl implements ScoreService {
                     .status(HttpStatus.NOT_FOUND)
                     .body(new Response("Not found subject"));
         }
-        if (scoreDTO.getPoint() < 0 || scoreDTO.getPoint() > 10){
+        if (scoreDTO.getPoint() < 0 || scoreDTO.getPoint() > 10) {
             return ResponseEntity
                     .badRequest()
                     .body(new Response(HttpStatus.BAD_REQUEST));
         }
-        Score score = new Score(
-                scoreDTO.getPoint()
-        );
-        User user = scoreDTO.getUsers();
+        if (scoreRepository.findAllBySubject_IdAndUsers_Id(scoreDTO.getUsers().getId(),
+                scoreDTO.getSubject().getId()) == null) {
+            Score score = new Score(
+                    scoreDTO.getPoint()
+            );
+            User user = scoreDTO.getUsers();
+            score.setUsers(user);
 
-        Subject subject = scoreDTO.getSubject();
+            Subject subject = scoreDTO.getSubject();
 
-        score.setUsers(user);
-        score.setSubject(subject);
-        scoreRepository.save(score);
-        return ResponseEntity.status(HttpStatus.OK).body(new Response(HttpStatus.OK));
+            score.setSubject(subject);
+            scoreRepository.save(score);
+            return ResponseEntity.status(HttpStatus.OK).body(new Response(HttpStatus.OK));
+
+
+        } else {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new Response("Already exist"));
+        }
     }
 
     @Override
     public ResponseEntity<Response> updateScoreforStudent(ScoreDTO scoreDTO) {
-        Score score = objectMapper.convertValue(scoreDTO,Score.class);
+        if (!userRepository.existsByIdAndIsDelete(scoreDTO.getUsers().getId(), false)) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new Response("Not found student"));
+        }
+        if (!subjectRepository.existsByIdAndStatus(scoreDTO.getSubject().getId(), false)) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(new Response("Not found subject"));
+        }
+        if (scoreDTO.getPoint() < 0 || scoreDTO.getPoint() > 10) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(new Response("Score student must be >0 and <= 10 !!!"));
+        }
+        Score score = objectMapper.convertValue(scoreDTO, Score.class);
         scoreRepository.save(score);
         return ResponseEntity.status(HttpStatus.OK).body(new Response(HttpStatus.OK));
     }

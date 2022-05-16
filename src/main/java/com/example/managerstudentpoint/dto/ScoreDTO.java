@@ -17,4 +17,10 @@ public class ScoreDTO {
     private User users;
 
     private Subject subject;
+
+    public ScoreDTO(Double point) {
+        this.point = point;
+    }
+    public ScoreDTO() {
+    }
 }

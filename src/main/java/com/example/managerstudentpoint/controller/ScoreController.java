@@ -31,19 +31,6 @@ public class ScoreController {
     @Autowired
     XLSXFileServiceImpl exportExcelFileService;
 
-    @GetMapping("/ScoreBySubject")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Response> getScoreSubject(
-            @RequestParam(name = "key", defaultValue = "") Long key,
-            @RequestParam(name = "size", defaultValue = "5") Integer pageSize,
-            @RequestParam(name = "page", defaultValue = "1") Integer page
-    ) {
-        if (page <= 0) {
-            page = 1;
-        }
-        return scoreService.getScoresByClassAndCourse(key, page, pageSize);
-    }
-
     @GetMapping("/export")
     @PreAuthorize("hasRole('ADMIN')")
     public void exportScoreBySubjectAndClass(@Validated @RequestParam(name = "subId") Long sub_id,
@@ -68,4 +55,13 @@ public class ScoreController {
         return scoreService.updateScoreforStudent(scoreDTO);
     }
 
+//    @GetMapping("/subject")
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public ResponseEntity<Response> getScoreBySubject(
+//            @RequestParam(name = "key", defaultValue = "") String key,
+//            @RequestParam(name = "size", defaultValue = "5") Integer pageSize,
+//            @RequestParam(name = "page", defaultValue = "1") Integer page
+//    ) {
+//        return scoreService.getScoresBySubject(key, page, pageSize);
+//    }
 }

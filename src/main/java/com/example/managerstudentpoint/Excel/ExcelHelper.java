@@ -18,7 +18,14 @@ import java.util.List;
 
 public class ExcelHelper {
     public static String TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-    static String[] HEADERs = {"User name", "Password", "Full name", "Phone number", "Email", "Gender", "Address", "GroupClass"};
+    static String[] HEADERs = {"User name",
+            "Password",
+            "Full name",
+            "Phone number",
+            "Email",
+            "Gender",
+            "Address",
+            "GroupClass"};
     static String SHEET = "Student";
 
     AuthenServiceImpl authenService;

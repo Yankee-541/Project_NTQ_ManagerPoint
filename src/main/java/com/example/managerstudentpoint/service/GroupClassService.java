@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 public interface GroupClassService {
-    ResponseEntity<Response> getStudentByClassId(Long id);
+    ResponseEntity<Response> getStudentByClassId(String groupClass);
 
     ResponseEntity<Response> addClass(GroupClassDTO groupClassDTO);
 

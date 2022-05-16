@@ -36,17 +36,8 @@ public class GroupClass {
     @JsonIgnore
     private List<User> userList;
 
-    public GroupClass(Long id, String className) {
-        this.id = id;
-        this.className = className;
-    }
-
     public GroupClass(String className) {
         this.className = className;
-    }
-
-    public GroupClass(Long id) {
-        this.id = id;
     }
 
     public GroupClass() {

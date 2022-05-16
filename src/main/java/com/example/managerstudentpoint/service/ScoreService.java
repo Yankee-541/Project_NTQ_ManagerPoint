@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ScoreService {
 
-    ResponseEntity<Response> getScoresByClassAndCourse(Long key, Integer page, Integer pageSize);
+    ResponseEntity<Response> getScoresBySubject(String key, Integer page, Integer pageSize);
 
     ResponseEntity<Response> addScoreforStudent(ScoreDTO scoreDTO);
 

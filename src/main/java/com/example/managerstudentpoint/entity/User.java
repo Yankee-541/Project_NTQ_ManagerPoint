@@ -58,14 +58,6 @@ public class User {
     @Column
     private Boolean isDelete = Boolean.FALSE;
 
-    public Boolean getDelete() {
-        return isDelete;
-    }
-
-    public void setDelete(Boolean delete) {
-        isDelete = delete;
-    }
-
     @Column
     private String email;
 

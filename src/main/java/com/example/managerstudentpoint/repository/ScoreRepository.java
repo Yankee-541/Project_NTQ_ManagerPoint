@@ -1,7 +1,7 @@
 package com.example.managerstudentpoint.repository;
 
 import com.example.managerstudentpoint.entity.Score;
-import com.example.managerstudentpoint.entity.Subject;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +13,9 @@ import java.util.List;
 @Repository
 public interface ScoreRepository extends JpaRepository<Score, Long> {
 
-    Page<Score> findAllBySubject(Subject subject, Pageable pageable);
+    @Query(value = "select s from Score s join s.subject sub " +
+            " where concat(sub.id, sub.nameSubject) like %:subject% and sub.status =:isDelete  ")
+    Page<Score> findAllScoreBySubject(boolean isDelete,String subject, Pageable pageable);
 
     @Query("select s from Score s join s.users u" +
             " where s.users.isDelete=:isDelete and s.subject.id = :sub_id and s.users.groupClass.id =:c_id")
@@ -22,5 +24,7 @@ public interface ScoreRepository extends JpaRepository<Score, Long> {
     @Query("select  s from Score s join s.users u " +
             " where s.users.isDelete =:isDelete and s.users.rollNumber =:rollNumber")
     List<Score> getScoresByUsers(boolean isDelete, String rollNumber);
+
+    Score findAllBySubject_IdAndUsers_Id(Long sub_id, Long user_id);
 
 }
