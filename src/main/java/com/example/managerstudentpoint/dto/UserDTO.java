@@ -30,6 +30,7 @@ public class UserDTO extends BaseAbstractDTO<UserDTO> {
     private String fullName;
 
     @Size(max = 12, min = 8, message = "invalid phone number")
+    @Pattern(regexp = "^[(84|0[3|5|7|8|9])+([0-9]{8})]+$")
     @NotBlank(message = "Phone number is mandatory")
     private String phoneNumber;
 

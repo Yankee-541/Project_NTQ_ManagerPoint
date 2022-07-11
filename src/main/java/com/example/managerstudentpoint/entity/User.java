@@ -80,6 +80,26 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
+    public User(String username,
+                String password,
+                String fullName,
+                String rollNumber,
+                String gender,
+                String address,
+                Boolean isDelete,
+                String email,
+                String phoneNumber) {
+        this.username = username;
+        this.password = password;
+        this.fullName = fullName;
+        this.rollNumber = rollNumber;
+        this.gender = gender;
+        this.address = address;
+        this.isDelete = isDelete;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+    }
+
     public User(Long id,
                 String password,
                 String fullName,

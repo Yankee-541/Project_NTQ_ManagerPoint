@@ -7,13 +7,15 @@ import com.example.managerstudentpoint.response.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.mail.MessagingException;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 public interface AuthenService {
 
-    ResponseEntity<JwtResponse> login(LoginRequestDTO authenRequestDTO) throws NoSuchAlgorithmException;
+    ResponseEntity<?> login(LoginRequestDTO authenRequestDTO);
 
-    ResponseEntity<Response> signup(UserDTO studentDTO) throws NoSuchAlgorithmException;
+    ResponseEntity<?> signup(UserDTO studentDTO) throws NoSuchAlgorithmException;
 
     UserDetails loadUserById(Long userId);
 
@@ -26,5 +28,7 @@ public interface AuthenService {
     ResponseEntity<Response> changePassword(UserDTO loginRequestDTO, String newPass) throws NoSuchAlgorithmException;
 
     ResponseEntity<Response> resetPassword(UserDTO userDTO);
+
+    ResponseEntity<?> forgotPasswordSendToMail(UserDTO userDTO) throws MessagingException, IOException;
 
 }

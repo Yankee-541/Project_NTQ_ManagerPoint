@@ -27,8 +27,7 @@ public class AuthorController {
     AuthenService authenService;
 
     @PutMapping("/login")
-    public ResponseEntity<?> login(@Validated @RequestBody LoginRequestDTO loginRequest)
-            throws NoSuchAlgorithmException {
+    public ResponseEntity<?> login(@Validated @RequestBody LoginRequestDTO loginRequest) {
         return authenService.login(loginRequest);
     }
 
@@ -56,7 +55,6 @@ public class AuthorController {
     @PutMapping("reset-password")
     public ResponseEntity<Response> resetPassword(@RequestBody UserDTO userDTO){
         return authenService.resetPassword(userDTO);
-
     }
 
 }

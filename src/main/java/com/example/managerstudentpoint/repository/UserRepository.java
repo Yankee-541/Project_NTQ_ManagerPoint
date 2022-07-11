@@ -1,6 +1,5 @@
 package com.example.managerstudentpoint.repository;
 
-import com.example.managerstudentpoint.entity.GroupClass;
 import com.example.managerstudentpoint.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -38,6 +36,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Page<User> getUsersAllByFullNameAndRollNumberAndUsername(boolean status,String key, Pageable pageable);
 
     User getUserByUsername(String name);
+
+    User getUserByEmail(String email);
 
     @Query(value = "select rollnumber from mangerstudentpoint.user " +
             "order by rollnumber desc LIMIT 1;", nativeQuery = true)
