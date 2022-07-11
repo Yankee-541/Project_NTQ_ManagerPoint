@@ -23,6 +23,7 @@ public class EmailController {
 
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPasswordSendToMail(@RequestBody UserDTO userDTO) throws MessagingException, IOException {
+        System.out.println();
         return authenService.forgotPasswordSendToMail(userDTO);
     }
 }
