@@ -1,6 +1,5 @@
 package com.example.managerstudentpoint.service;
 
-import com.example.managerstudentpoint.dto.JwtResponse;
 import com.example.managerstudentpoint.dto.LoginRequestDTO;
 import com.example.managerstudentpoint.dto.UserDTO;
 import com.example.managerstudentpoint.response.Response;
