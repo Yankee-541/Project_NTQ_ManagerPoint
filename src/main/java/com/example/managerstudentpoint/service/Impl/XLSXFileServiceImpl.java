@@ -13,10 +13,9 @@ import com.example.managerstudentpoint.repository.SubjectRepository;
 import com.example.managerstudentpoint.repository.UserRepository;
 import com.example.managerstudentpoint.service.ExcelFileService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ooxml.POIXMLDocument;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -56,10 +55,6 @@ public class XLSXFileServiceImpl implements ExcelFileService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public List<User> getAllTutorials() {
-        return userRepository.findAll();
-    }
-
     @Override
     public File exportFile(String fileName,
                            String sheetName,
@@ -67,7 +62,7 @@ public class XLSXFileServiceImpl implements ExcelFileService {
                            Class<? extends BaseExportExcelModel> classType) {
         File excelFile = null;
         try {
-            Path pathExcelFile = Files.createTempFile(Paths.get("F:\\Documents\\"), fileName, ".xlsx");
+            Path pathExcelFile = Files.createTempFile(Paths.get("C:\\Users\\dang.tran2\\Downloads"), fileName, ".xlsx");
             excelFile = pathExcelFile.toFile();
 
             POIXMLDocument workbook = exportExcel(dataExport, classType, sheetName);
@@ -85,10 +80,13 @@ public class XLSXFileServiceImpl implements ExcelFileService {
     }
 
     @Override
-    public File exportScoreByRollnumber(String fileName, String sheetName, List<BaseExportExcelModel> dataExport, Class<? extends BaseExportExcelModel> classType) {
+    public File exportScoreByRollnumber(String fileName,
+                                        String sheetName,
+                                        List<BaseExportExcelModel> dataExport,
+                                        Class<? extends BaseExportExcelModel> classType) {
         File excelFile = null;
         try {
-            Path pathExcelFile = Files.createTempFile(Paths.get("F:\\Documents\\"), fileName, ".xlsx");
+            Path pathExcelFile = Files.createTempFile(Paths.get("C:\\Users\\dang.tran2\\Downloads"), fileName, ".xlsx");
             excelFile = pathExcelFile.toFile();
 
             POIXMLDocument workbook = exportScoreByRollnumber(dataExport, classType, sheetName);

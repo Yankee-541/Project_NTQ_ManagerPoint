@@ -59,7 +59,8 @@ public class StudentController {
     @Autowired
     XLSXFileServiceImpl exportExcelFileService;
 
-    @GetMapping("/list")
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Response> getAllStudents(
             @RequestParam(name = "key", defaultValue = "") String key,
             @RequestParam(name = "size", defaultValue = "5") Integer pageSize,
@@ -78,8 +79,26 @@ public class StudentController {
 
     @DeleteMapping()
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Response> deleteStudent(@RequestBody Long[] ids) {
+    public ResponseEntity<?> deleteStudent(@RequestBody Long[] ids) {
         return authenService.deleteStudent(ids);
+    }
+
+    @GetMapping("deleted")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Response> getAllStudentDeleted(
+            @RequestParam(name = "key", defaultValue = "") String key,
+            @RequestParam(name = "size", defaultValue = "5") Integer pageSize,
+            @RequestParam(name = "page", defaultValue = "1") Integer page) {
+        if (page <= 0) {
+            page = 1;
+        }
+        return userService.getAllStudentsDeleted(key, page, pageSize);
+    }
+
+    @PutMapping("restore-student/{id}")
+    @PreAuthorize("ADMIN")
+    public ResponseEntity<?> restoreStudentDeleted(@PathVariable Long id){
+        return userService.restoreStudentDeleted(id);
     }
 
     @PutMapping
@@ -91,7 +110,6 @@ public class StudentController {
         }
         return authenService.updateStudent(userDTO);
     }
-
 
     @GetMapping("/export-score")
     public void exportScoreBySubjectAndClass(

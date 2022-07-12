@@ -9,7 +9,7 @@ public interface SubjectService {
 
     ResponseEntity<Response> deleteSubject(Long[] ids);
 
-    ResponseEntity<Response> createSubject(SubjectDTO subjectDTO);
+    ResponseEntity<?> createSubject(SubjectDTO subjectDTO);
 
     ResponseEntity<Response> updateSubject(SubjectDTO subjectDTO);
 

@@ -20,7 +20,7 @@ public interface AuthenService {
 
     boolean login_1(UserDTO account);
 
-    ResponseEntity<Response> deleteStudent(Long[] id);
+    ResponseEntity<?> deleteStudent(Long[] id);
 
     ResponseEntity<Response> updateStudent(UserDTO studentDTO) throws NoSuchAlgorithmException;
 

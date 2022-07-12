@@ -11,7 +11,7 @@ public interface ScoreService {
 
     ResponseEntity<Response> getScoresBySubject(String key, Integer page, Integer pageSize);
 
-    ResponseEntity<Response> addScoreforStudent(ScoreDTO scoreDTO);
+    ResponseEntity<?> addScoreforStudent(ScoreDTO scoreDTO);
 
     ResponseEntity<Response> updateScoreforStudent(ScoreDTO scoreDTO);
 

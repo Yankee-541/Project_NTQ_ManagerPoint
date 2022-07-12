@@ -25,6 +25,6 @@ public interface ScoreRepository extends JpaRepository<Score, Long> {
             " where s.users.isDelete =:isDelete and s.users.rollNumber =:rollNumber")
     List<Score> getScoresByUsers(boolean isDelete, String rollNumber);
 
-    Score findAllBySubject_IdAndUsers_Id(Long sub_id, Long user_id);
+    Score findAllByUsers_IdAndSubject_Id(Long sub_id, Long user_id);
 
 }

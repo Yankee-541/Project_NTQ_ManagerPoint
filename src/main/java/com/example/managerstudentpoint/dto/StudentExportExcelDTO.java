@@ -22,7 +22,6 @@ public class StudentExportExcelDTO extends BaseExportExcelModel {
     private Double scoreDTO;
     private String subjectDTO;
 
-
     @Override
     public List<MetadataExcelModel> getListMetadata() {
         return Arrays.asList(

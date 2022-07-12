@@ -13,6 +13,10 @@ public interface StudentService {
 
     ResponseEntity<Response> getAllStudents(String key, Integer page, Integer pageSize);
 
+    ResponseEntity<Response> getAllStudentsDeleted(String key, Integer page, Integer pageSize);
+
+    ResponseEntity<?> restoreStudentDeleted(Long id);
+
     UserDetails loadUserById(Long userId);
 
     List<StudentExportExcelDTO> listAll();

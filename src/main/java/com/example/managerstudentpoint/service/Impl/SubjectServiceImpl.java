@@ -67,7 +67,7 @@ public class SubjectServiceImpl implements SubjectService {
     }
 
     @Override
-    public ResponseEntity<Response> createSubject(SubjectDTO subjectDTO) {
+    public ResponseEntity<?> createSubject(SubjectDTO subjectDTO) {
         if(subjectRepository.existsByNameSubject(subjectDTO.getNameSubject())){
             return ResponseEntity
                     .badRequest()
@@ -81,7 +81,7 @@ public class SubjectServiceImpl implements SubjectService {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new Response(subjectDTO));
+                .body("OK");
     }
 
     @Override

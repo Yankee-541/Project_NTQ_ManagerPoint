@@ -186,7 +186,7 @@ public class AuthenServiceImpl implements AuthenService, UserDetailsService {
     }
 
     @Override
-    public ResponseEntity<Response> deleteStudent(Long[] ids) {
+    public ResponseEntity<?> deleteStudent(Long[] ids) {
         for (long id : ids) {
             User user = userRepository.findByIdAndIsDelete(id, false).orElse(null);
             if (user == null) {

@@ -5,8 +5,6 @@ import com.example.managerstudentpoint.entity.User;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
-import javax.validation.constraints.Size;
-
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ScoreDTO {
@@ -18,9 +16,4 @@ public class ScoreDTO {
 
     private Subject subject;
 
-    public ScoreDTO(Double point) {
-        this.point = point;
-    }
-    public ScoreDTO() {
-    }
 }

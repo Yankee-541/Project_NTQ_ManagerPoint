@@ -31,7 +31,6 @@ public class SubjectController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Response> getScoreBySubject(
             @PathVariable String nameSubject,
-//            @RequestParam(name = "key", defaultValue = "") String nameSubject,
             @RequestParam(name = "size", defaultValue = "5") Integer pageSize,
             @RequestParam(name = "page", defaultValue = "1") Integer page
     ) {
@@ -59,7 +58,7 @@ public class SubjectController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Response> createSubject(@RequestBody SubjectDTO subjectDTO) {
+    public ResponseEntity<?> createSubject(@RequestBody SubjectDTO subjectDTO) {
         return subjectService.createSubject(subjectDTO);
     }
 

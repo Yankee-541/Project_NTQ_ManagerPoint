@@ -70,6 +70,39 @@ public class StudentServiceImpl implements StudentService, UserDetailsService {
     }
 
     @Override
+    public ResponseEntity<Response> getAllStudentsDeleted(String key, Integer page, Integer pageSize) {
+        List<User> studentList = userRepository.getUsersAllByFullNameAndRollNumberAndUsername(
+                true,
+                key,
+                PageRequest.of(page - 1, pageSize)).getContent();
+        if (studentList.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new Response(HttpStatus.NOT_FOUND)
+            );
+        } else {
+            List<InfoStudentDTO> userDTOList = new ArrayList<>();
+            for (User user : studentList) {
+                userDTOList.add(objectMapper.convertValue(user, InfoStudentDTO.class));
+            }
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new Response(userDTOList)
+            );
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> restoreStudentDeleted(Long id) {
+        if (userRepository.existsById(id)){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                    new Response(HttpStatus.NOT_FOUND)
+            );
+        }
+
+
+        return null;
+    }
+
+    @Override
     public List<StudentExportExcelDTO> listAll() {
         List<StudentExportExcelDTO> studentExportExcelDTO = new ArrayList<>();
         List<User> userList = userRepository.findAll();

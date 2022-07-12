@@ -34,7 +34,7 @@ public class ScoreController {
     @GetMapping("/export")
     @PreAuthorize("hasRole('ADMIN')")
     public void exportScoreBySubjectAndClass(@Validated @RequestParam(name = "subject-id") Long sub_id,
-                                             @RequestParam(name = "class-id") Long c_id) throws IOException {
+                                                     @RequestParam(name = "class-id") Long c_id) throws IOException {
         List<BaseExportExcelModel> list = new ArrayList<>();
         for (StudentExportExcelDTO user : scoreService.getScoreBySubjectAndClass(sub_id, c_id)) {
             list.add(user);
@@ -46,7 +46,7 @@ public class ScoreController {
     }
 
     @PostMapping
-    public ResponseEntity<Response> addScoreForStudent(@Validated @RequestBody ScoreDTO scoreDTO){
+    public ResponseEntity<?> addScoreForStudent(@Validated @RequestBody ScoreDTO scoreDTO){
         return scoreService.addScoreforStudent(scoreDTO);
     }
 
@@ -54,14 +54,4 @@ public class ScoreController {
     public ResponseEntity<Response> updateScoreForStudent(@Validated @RequestBody ScoreDTO scoreDTO){
         return scoreService.updateScoreforStudent(scoreDTO);
     }
-
-//    @GetMapping("/subject")
-//    @PreAuthorize("hasRole('ADMIN')")
-//    public ResponseEntity<Response> getScoreBySubject(
-//            @RequestParam(name = "key", defaultValue = "") String key,
-//            @RequestParam(name = "size", defaultValue = "5") Integer pageSize,
-//            @RequestParam(name = "page", defaultValue = "1") Integer page
-//    ) {
-//        return scoreService.getScoresBySubject(key, page, pageSize);
-//    }
 }

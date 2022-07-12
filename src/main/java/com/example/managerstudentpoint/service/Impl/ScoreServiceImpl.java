@@ -4,8 +4,6 @@ import com.example.managerstudentpoint.dto.InfoScoreDTO;
 import com.example.managerstudentpoint.dto.InfoStudentDTO;
 import com.example.managerstudentpoint.dto.ScoreDTO;
 import com.example.managerstudentpoint.dto.StudentExportExcelDTO;
-import com.example.managerstudentpoint.dto.SubjectDTO;
-import com.example.managerstudentpoint.dto.UserDTO;
 import com.example.managerstudentpoint.entity.Score;
 import com.example.managerstudentpoint.entity.Subject;
 import com.example.managerstudentpoint.entity.User;
@@ -22,8 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,55 +56,40 @@ public class ScoreServiceImpl implements ScoreService {
     }
 
     @Override
-    public ResponseEntity<Response> addScoreforStudent(ScoreDTO scoreDTO) {
+    public ResponseEntity<?> addScoreforStudent(ScoreDTO scoreDTO) {
         if (!userRepository.existsByIdAndIsDelete(scoreDTO.getUsers().getId(), false)) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(new Response("Not found student"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found student");
         }
         if (!subjectRepository.existsByIdAndStatus(scoreDTO.getSubject().getId(), false)) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(new Response("Not found subject"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Not found subject");
         }
         if (scoreDTO.getPoint() < 0 || scoreDTO.getPoint() > 10) {
             return ResponseEntity
                     .badRequest()
                     .body(new Response(HttpStatus.BAD_REQUEST));
         }
-        if (scoreRepository.findAllBySubject_IdAndUsers_Id(scoreDTO.getUsers().getId(),
-                scoreDTO.getSubject().getId()) == null) {
+        if (scoreRepository.findAllByUsers_IdAndSubject_Id(scoreDTO.getUsers().getId(), scoreDTO.getSubject().getId()) == null) {
             Score score = new Score(
                     scoreDTO.getPoint()
             );
             User user = scoreDTO.getUsers();
             score.setUsers(user);
-
             Subject subject = scoreDTO.getSubject();
-
             score.setSubject(subject);
             scoreRepository.save(score);
             return ResponseEntity.status(HttpStatus.OK).body(new Response(HttpStatus.OK));
-
-
         } else {
-            return ResponseEntity
-                    .badRequest()
-                    .body(new Response("Already exist"));
+            return ResponseEntity.badRequest().body("Already exist");
         }
     }
 
     @Override
     public ResponseEntity<Response> updateScoreforStudent(ScoreDTO scoreDTO) {
         if (!userRepository.existsByIdAndIsDelete(scoreDTO.getUsers().getId(), false)) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(new Response("Not found student"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response("Not found student"));
         }
         if (!subjectRepository.existsByIdAndStatus(scoreDTO.getSubject().getId(), false)) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(new Response("Not found subject"));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response("Not found subject"));
         }
         if (scoreDTO.getPoint() < 0 || scoreDTO.getPoint() > 10) {
             return ResponseEntity
